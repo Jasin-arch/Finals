@@ -74,7 +74,8 @@ fun LoginScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.padding(pagepadding)
-    ) {
+    )
+    {
 //        lottie Anime
         LottiAnimationWidget(R.raw.business, 250.dp)
 //   welcoming text
@@ -163,7 +164,7 @@ fun LoginScreen(
         OutlinedButton(
             onClick = {
                 viewModel.loginUser()
-            },
+                },
             colors = ButtonDefaults.outlinedButtonColors(
                 contentColor = Color(0xFFFFFFFF),
                 containerColor = Both
@@ -196,9 +197,7 @@ fun LoginScreen(
                     )
 
                     LaunchedEffect(Unit) {
-                        navController.navigate(Routes.OnboadingPage.name) {
-                            popUpTo(Routes.LoginPage.name) { inclusive = true }
-                        }
+                        navController.navigate(Routes.ChoosePage.name)
                     }
                 }
             }

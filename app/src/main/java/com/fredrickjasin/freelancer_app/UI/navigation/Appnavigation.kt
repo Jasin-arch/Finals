@@ -7,6 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.fredrickjasin.freelancer_app.UI.Onboading.OnboadingScreen
+import com.fredrickjasin.freelancer_app.UI.Screens.Choose.ChooseScreen
 import com.fredrickjasin.freelancer_app.UI.Screens.ForgotPassword.ForgotPasswordScreen
 import com.fredrickjasin.freelancer_app.UI.Screens.Login.LoginScreen
 import com.fredrickjasin.freelancer_app.UI.Screens.SignUp.RegistrationScreen
@@ -21,5 +22,7 @@ fun AppNavigation(navController: NavHostController, modifier: Modifier ){
         composable (Routes.LoginPage.name){ LoginScreen(navController, modifier ) }
         composable (Routes.SignUpPage.name){ RegistrationScreen(navController, modifier ) }
         composable (Routes.ForgotPasswordPage.name){ ForgotPasswordScreen(navController, modifier) }
+        composable (Routes.ChoosePage.name){ ChooseScreen(navController, modifier) }
+
     }
 }

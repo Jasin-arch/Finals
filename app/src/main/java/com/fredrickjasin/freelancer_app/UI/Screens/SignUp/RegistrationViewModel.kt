@@ -12,7 +12,6 @@ class RegistrationViewModel : ViewModel() {
     private val repository = AuthRepository()
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
-    // 🔥 Always keep UI-safe (non-null string)
     private val _message = MutableStateFlow("")
     val message: StateFlow<String> = _message
     fun registerUser(user: UserModel) {

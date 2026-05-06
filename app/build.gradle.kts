@@ -74,6 +74,9 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
 
+    implementation(libs.coil.compose.v330)
+    implementation(libs.coil.network.okhttp.v330)
+
 
 
 

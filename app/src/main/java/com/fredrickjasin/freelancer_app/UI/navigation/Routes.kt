@@ -5,5 +5,7 @@ enum class Routes {
     SignUpPage,
     ForgotPasswordPage,
     OnboadingPage,
+    ChoosePage,
+
     ProfilePage,
 }

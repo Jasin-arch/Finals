@@ -64,8 +64,6 @@ class LoginViewModel(
 
             } catch (e: Exception) {
                 _error.value = e.message ?: "Login Failed"
-            } finally {
-                _isLoading.value = false
             }
         }
     }

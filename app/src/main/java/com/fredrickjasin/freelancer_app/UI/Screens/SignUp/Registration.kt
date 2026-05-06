@@ -44,7 +44,6 @@ fun RegistrationScreen(
     RegistrationViewModel: RegistrationViewModel = viewModel()
 
 ) {
-    val responseMessage by RegistrationViewModel.message.collectAsState()
     val isLoading = RegistrationViewModel.isLoading.collectAsState()
     var nameInput by remember { mutableStateOf(TextFieldValue("")) }
     var email by remember { mutableStateOf(TextFieldValue("")) }
@@ -58,7 +57,8 @@ fun RegistrationScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+    )
+    {
 //        lottie Anime
         LottiAnimationWidget(R.raw.business, 250.dp)
         Spacer(modifier = Modifier.height(24.dp))
