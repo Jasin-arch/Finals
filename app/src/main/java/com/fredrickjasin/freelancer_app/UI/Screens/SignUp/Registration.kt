@@ -40,12 +40,12 @@ import com.fredrickjasin.freelancer_app.ui.theme.SignUp
 @Composable
 fun RegistrationScreen(
     navController: NavHostController,
-   modifier: Modifier,
+    modifier: Modifier,
     RegistrationViewModel: RegistrationViewModel = viewModel()
 
-   ) {
+) {
+    val responseMessage by RegistrationViewModel.message.collectAsState()
     val isLoading = RegistrationViewModel.isLoading.collectAsState()
-    val responseMessage = RegistrationViewModel.message.collectAsState()
     var nameInput by remember { mutableStateOf(TextFieldValue("")) }
     var email by remember { mutableStateOf(TextFieldValue("")) }
     var passwordInput by remember { mutableStateOf(TextFieldValue("")) }
@@ -178,12 +178,9 @@ fun RegistrationScreen(
         )
         Spacer(modifier = Modifier.height(24.dp))
         HorizontalDivider()
-        Text(text = responseMessage.value)
-        Text(text = isLoading.value.toString())
-        HorizontalDivider()
-        if(isLoading.value){
+        if (isLoading.value) {
             CircularProgressIndicator()
-        }else{
+        } else {
             OutlinedButton(
                 onClick = {
                     val user = UserModel(
@@ -191,27 +188,24 @@ fun RegistrationScreen(
                         Password = passwordInput.text
                     )
                     RegistrationViewModel.registerUser(user)
-                }
+                },
+                colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = Both,
+                    contentColor = ForgotPassword
+                )
             ) {
-                OutlinedButton(
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = ForgotPassword,
-                        containerColor = Both
+                Text(
+                    text = "CREATE ACCOUNT",
+                    style = TextStyle(
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = LogIn
                     ),
-                    onClick = {}
-                ) {
-                    Text(
-                        text = "CREATE ACCOUNT ",
-                        style = TextStyle(
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = LogIn
-                        ),
-                        modifier = Modifier.padding(horizontal = 24.dp),
-                    )
-                }
+//                    modifier = Modifier.padding(horizontal = 24.dp)
+                )
             }
         }
+
 
 
         TextButton(

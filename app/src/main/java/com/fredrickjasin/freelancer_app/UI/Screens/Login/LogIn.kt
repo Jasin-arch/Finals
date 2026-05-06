@@ -14,6 +14,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItemDefaults.contentColor
@@ -23,6 +24,8 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,6 +43,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.fredrickjasin.freelancer_app.R
 import com.fredrickjasin.freelancer_app.UI.components.LottiAnimationWidget
@@ -50,10 +54,19 @@ import com.fredrickjasin.freelancer_app.ui.theme.ForgotPassword
 import com.fredrickjasin.freelancer_app.ui.theme.LogIn
 
 @Composable
-fun LoginScreen(navController: NavHostController, modifier: Modifier){
+fun LoginScreen(
+    navController: NavHostController,
+    modifier: Modifier,
+    viewModel: LoginViewModel = viewModel()
+    ) {
+    val email by viewModel.email.collectAsState()
+    val password by viewModel.password.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
+    val success by viewModel.success.collectAsState()
     var EmailInput by remember { mutableStateOf(TextFieldValue("")) }
     var passwordInput by remember { mutableStateOf(TextFieldValue("")) }
-    var isvisibile by remember { mutableStateOf(false )}
+    var isvisibile by remember { mutableStateOf(false) }
 
 
 
@@ -61,7 +74,7 @@ fun LoginScreen(navController: NavHostController, modifier: Modifier){
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.padding(pagepadding)
-    )  {
+    ) {
 //        lottie Anime
         LottiAnimationWidget(R.raw.business, 250.dp)
 //   welcoming text
@@ -77,9 +90,9 @@ fun LoginScreen(navController: NavHostController, modifier: Modifier){
 
 //            Email Input
         OutlinedTextField(
-            value = EmailInput,
-            onValueChange = { EmailInput = it },
-            label = { Text(text = "Enter Email")},
+            value = email,
+            onValueChange = { viewModel.onEmailChange(it) },
+            label = { Text(text = "Enter Email") },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Outlined.Email,
@@ -88,7 +101,7 @@ fun LoginScreen(navController: NavHostController, modifier: Modifier){
                 )
             },
             placeholder = {
-                Text( text =  "E.g User@Example.com")
+                Text(text = "E.g User@Example.com")
             },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = LogIn,
@@ -102,9 +115,9 @@ fun LoginScreen(navController: NavHostController, modifier: Modifier){
         Spacer(modifier = Modifier.height(24.dp))
 //        password Input
         OutlinedTextField(
-            value = passwordInput,
-            onValueChange = { passwordInput = it },
-            label = { Text ( text = "Enter Password" ) },
+            value = password,
+            onValueChange = { viewModel.onPasswordChange(it) },
+            label = { Text(text = "Enter Password") },
             leadingIcon = {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.password_24),
@@ -112,43 +125,45 @@ fun LoginScreen(navController: NavHostController, modifier: Modifier){
                     tint = Both,
                 )
             },
-    visualTransformation = if (isvisibile){
-        VisualTransformation.None
-    } else {
-        PasswordVisualTransformation()
-    },
-    trailingIcon = {
-        IconButton(
-            onClick = {isvisibile = !isvisibile }
-        ) {
-            if (isvisibile){
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.visibility_off_24),
-                    contentDescription = "Password",
-                    tint = Both,
-                )
+            visualTransformation = if (isvisibile) {
+                VisualTransformation.None
             } else {
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.visibale_24),
-                    contentDescription = "Password",
-                    tint = Both,
-                )
-            }
-        }
-    },
-    colors = OutlinedTextFieldDefaults.colors(
-        focusedBorderColor = LogIn,
-        unfocusedBorderColor = Both
-    ),
-    maxLines = 1,
-    shape = RoundedCornerShape(24.dp),
-    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-    modifier = Modifier.fillMaxWidth()
-    )
+                PasswordVisualTransformation()
+            },
+            trailingIcon = {
+                IconButton(
+                    onClick = { isvisibile = !isvisibile }
+                ) {
+                    if (isvisibile) {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(R.drawable.visibility_off_24),
+                            contentDescription = "Password",
+                            tint = Both,
+                        )
+                    } else {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(R.drawable.visibale_24),
+                            contentDescription = "Password",
+                            tint = Both,
+                        )
+                    }
+                }
+            },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = LogIn,
+                unfocusedBorderColor = Both
+            ),
+            maxLines = 1,
+            shape = RoundedCornerShape(24.dp),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            modifier = Modifier.fillMaxWidth()
+        )
         Spacer(modifier = Modifier.height(24.dp))
 //        button
         OutlinedButton(
-            onClick = {},
+            onClick = {
+                viewModel.loginUser()
+            },
             colors = ButtonDefaults.outlinedButtonColors(
                 contentColor = Color(0xFFFFFFFF),
                 containerColor = Both
@@ -165,31 +180,62 @@ fun LoginScreen(navController: NavHostController, modifier: Modifier){
             )
 
         }
+        if (isLoading) {
+            CircularProgressIndicator()
+        } else {
+            error?.let {
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = it,
+                    color = Both
+                )
+                if (success) {
+                    Text(
+                        text = "Login successful!",
+                        color = ForgotPassword
+                    )
+
+                    LaunchedEffect(Unit) {
+                        navController.navigate(Routes.OnboadingPage.name) {
+                            popUpTo(Routes.LoginPage.name) { inclusive = true }
+                        }
+                    }
+                }
+            }
+        }
+
         Spacer(modifier = Modifier.height(24.dp))
         Row {
-            TextButton (
+            TextButton(
                 onClick = { navController.navigate(Routes.ForgotPasswordPage.name) }
-            ){ Text(text = "Forgot Password",
-                style = TextStyle(
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = LogIn
-                ),
-            )
+            ) {
+                Text(
+                    text = "Forgot Password",
+                    style = TextStyle(
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = LogIn
+                    ),
+                )
             }
 
             TextButton(
                 onClick = { navController.navigate(Routes.SignUpPage.name) }
-            ) {Text(text = "No account?", style = TextStyle(
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Bold,
-                color = LogIn
-            ),
-            ) }
+            ) {
+                Text(
+                    text = "No account?",
+                    style = TextStyle(
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = LogIn
+                    ),
+                )
+            }
         }
 
 
     }
+
 }
 
 

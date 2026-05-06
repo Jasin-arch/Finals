@@ -1,52 +1,43 @@
 package com.fredrickjasin.freelancer_app.UI.Screens.SignUp
 
-import com.fredrickjasin.freelancer_app.data.Models.UserModel
-import com.fredrickjasin.freelancer_app.data.Repository.AuthRepository
-import android.widget.Toast
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.jan.supabase.auth.auth
-import io.github.jan.supabase.auth.status.SessionStatus
+import com.fredrickjasin.freelancer_app.data.Models.UserModel
+import com.fredrickjasin.freelancer_app.data.Repository.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.sql.DriverManager.println
-
-
-sealed class RegisterUiState(
-    val isLoading: Boolean = false,
-    val isSuccess: Boolean = false,
-    val error: String? = null
-)
 
 class RegistrationViewModel : ViewModel() {
+    private val repository = AuthRepository()
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+    // 🔥 Always keep UI-safe (non-null string)
+    private val _message = MutableStateFlow("")
+    val message: StateFlow<String> = _message
+    fun registerUser(user: UserModel) {
+        if (user.Email.isBlank() || user.Password.isBlank()) {
+            _message.value = "Email and Password cannot be empty"
+            return
+        }
 
-    val authRepository = AuthRepository()
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(user.Email).matches()) {
+            _message.value = "Invalid email format"
+            return
+        }
 
-    //     state
-    private var _isLoading = MutableStateFlow(false)
-    val isLoading = _isLoading.asStateFlow()
-
-    private var _message = MutableStateFlow("")
-    val message = _message.asStateFlow()
-
-
-    //     methods
-    fun registerUser(userModel: UserModel) {
-        _isLoading.value = true
         viewModelScope.launch {
+            _isLoading.value = true
+            _message.value = "Welcome"
 
             try {
-                authRepository.registerUser(userModel)
-                _isLoading.value =false
-                _message.value="success!"
-            }catch (e:Error){
-                _isLoading.value =false
-                _message.value="Oops! Something went wrong:${e.message}"
-            }
+                repository.registerUser(user)
 
+                _message.value = "Account created successfully"
+
+            } catch (e: Exception) {
+                _message.value = e.message ?: "Registration Failed"
+            }
         }
     }
 }
