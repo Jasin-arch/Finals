@@ -183,22 +183,27 @@ fun LoginScreen(
         }
         if (isLoading) {
             CircularProgressIndicator()
-        } else {
-            error?.let {
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    text = it,
-                    color = Both
-                )
-                if (success) {
-                    Text(
-                        text = "Login successful!",
-                        color = ForgotPassword
-                    )
+        }
 
-                    LaunchedEffect(Unit) {
-                        navController.navigate(Routes.ChoosePage.name)
-                    }
+        error?.let {
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                text = it,
+                color = Color.Red
+            )
+        }
+
+        if (success) {
+            Text(
+                text = "Login successful!",
+                color = ForgotPassword
+            )
+        }
+
+        LaunchedEffect(success) {
+            if (success) {
+                navController.navigate(Routes.ChoosePage.name) {
+                    popUpTo(Routes.LoginPage.name) { inclusive = true }
                 }
             }
         }

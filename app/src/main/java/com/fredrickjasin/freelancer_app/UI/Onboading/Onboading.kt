@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.fredrickjasin.freelancer_app.R
+import com.fredrickjasin.freelancer_app.UI.components.LottiAnimationWidget
 import com.fredrickjasin.freelancer_app.UI.components.pagepadding
 import com.fredrickjasin.freelancer_app.UI.navigation.Routes
 import com.fredrickjasin.freelancer_app.ui.theme.Both
@@ -29,12 +30,12 @@ import com.fredrickjasin.freelancer_app.ui.theme.LogIn
 @Composable
 fun OnboadingScreen(navController: NavHostController, modifier: Modifier){
 
-    Image(
-        painter = painterResource(id = R.drawable.bg_onboarding),
-        contentDescription = "Background",
-        contentScale = ContentScale.Crop,
-        modifier = Modifier.fillMaxSize()
-    )
+//    Image(
+//        painter = painterResource(id = R.drawable.),
+//        contentDescription = "Background",
+//        contentScale = ContentScale.Crop,
+//        modifier = Modifier.fillMaxSize()
+//    )
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -42,6 +43,8 @@ fun OnboadingScreen(navController: NavHostController, modifier: Modifier){
             .padding(pagepadding)
             .fillMaxSize()
     ) {
+
+
         Text(
             text = "WELCOME TO OUR SERVICES",
             style = TextStyle(

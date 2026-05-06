@@ -26,6 +26,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,7 +53,12 @@ import com.fredrickjasin.freelancer_app.ui.theme.LogIn
 
 @Composable
 fun ForgotPasswordScreen(navController: NavHostController, modifier: Modifier) {
+    val viewModel = remember { ForgotPasswordViewModel() }
     var emailInput by remember { mutableStateOf(TextFieldValue("")) }
+    val email by viewModel.email.collectAsState()
+    val error by viewModel.error.collectAsState()
+    val success by viewModel.successMessage.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
 //    Structure
     Column(
@@ -76,8 +82,8 @@ fun ForgotPasswordScreen(navController: NavHostController, modifier: Modifier) {
         Spacer(modifier = Modifier.height(24.dp))
 //    email input
         OutlinedTextField(
-            value = emailInput,
-            onValueChange = { emailInput = it },
+            value = email,
+            onValueChange = { viewModel.onEmailChange(it) },
             label = { Text("Email Address") },
             leadingIcon = {
                 Icon(
@@ -104,13 +110,22 @@ fun ForgotPasswordScreen(navController: NavHostController, modifier: Modifier) {
         Spacer(modifier = Modifier.height(24.dp))
 //    submit button
         OutlinedButton(
-            onClick = {},
+            onClick = {
+                viewModel.resetPassword()
+            },
             colors = ButtonDefaults.outlinedButtonColors(
                 contentColor = Color(0xFFFFFFFF),
                 containerColor = Both
             )
         ) {
             Text("GET PASSWORD")
+        }
+        if (error != null) {
+            Text(text = error!!, color = Color.Red)
+        }
+
+        if (success != null) {
+            Text(text = success!!, color = Color.Green)
         }
         Spacer(modifier = Modifier.height(24.dp))
 
