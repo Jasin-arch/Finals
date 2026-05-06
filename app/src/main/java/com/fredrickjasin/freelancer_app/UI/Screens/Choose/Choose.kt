@@ -1,38 +1,47 @@
 package com.fredrickjasin.freelancer_app.UI.Screens.Choose
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
 import com.fredrickjasin.freelancer_app.UI.components.pagepadding
 import com.fredrickjasin.freelancer_app.ui.theme.LogIn
-import com.fredrickjasin.freelancer_app.ui.theme.freelancerscards
-
+import androidx.compose.material.ripple.rememberRipple
 @Composable
 fun ChooseScreen(
     navController: NavHostController,
-    modifier: Modifier,
+    modifier: Modifier
 ) {
-
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(pagepadding)
     ) {
 
+        // Welcome text
         Text(
-            text = "Welcome Please Choose your Area",
+            text = "Welcome! Please Choose your Area",
             style = TextStyle(
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
@@ -42,53 +51,107 @@ fun ChooseScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // ✅ Card 1
+        // ---------------------------
+        // Card 1: Client
+        // ---------------------------
         Card(
+            shape = RoundedCornerShape(20.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .height(120.dp)
-                .clickable {
-                    // TODO: navigate to Client side
-                    // navController.navigate(...)
-                },
-            colors = CardDefaults.cardColors(freelancerscards)
+                .height(140.dp)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+//                    indication = rememberRipple(bounded = true),
+                    onClick = {
+                        // Navigate to Client screen
+                        // navController.navigate(Routes.ClientPage.name)
+                    }
+                )
         ) {
             Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.linearGradient(
+                            colors = listOf(Color(0xFF6A11CB), Color(0xFF2575FC))
+                        )
+                    ),
+                contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "I am a Client",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = LogIn
-                )
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(40.dp)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "I am a Client",
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp
+                    )
+                    Text(
+                        text = "Hire freelancers easily",
+                        color = Color.White.copy(0.8f),
+                        fontSize = 12.sp
+                    )
+                }
             }
         }
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // ✅ Card 2
+        // ---------------------------
+        // Card 2: Freelancer
+        // ---------------------------
         Card(
+            shape = RoundedCornerShape(20.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .height(120.dp)
-                .clickable {
-                    // TODO: navigate to Freelancer side
-                    // navController.navigate(...)
-                },
-            colors = CardDefaults.cardColors()
+                .height(140.dp)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+//                    indication = rememberRipple(bounded = true),
+                    onClick = {
+                        // Navigate to Freelancer screen
+                        // navController.navigate(Routes.FreelancerPage.name)
+                    }
+                )
         ) {
             Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.linearGradient(
+                            colors = listOf(Color(0xFFFC5C7D), Color(0xFF6A82FB))
+                        )
+                    ),
+                contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "I am a Freelancer",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = LogIn
-                )
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+//                    Icon(
+//                        imageVector = Icons.Default.Work,
+//                        contentDescription = null,
+//                        tint = Color.White,
+//                        modifier = Modifier.size(40.dp)
+//                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "I am a Freelancer",
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp
+                    )
+                    Text(
+                        text = "Find jobs and grow your career",
+                        color = Color.White.copy(0.8f),
+                        fontSize = 12.sp
+                    )
+                }
             }
         }
     }

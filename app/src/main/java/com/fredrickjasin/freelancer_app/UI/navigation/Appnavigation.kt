@@ -16,7 +16,7 @@ import com.fredrickjasin.freelancer_app.UI.Screens.SignUp.RegistrationScreen
 fun AppNavigation(navController: NavHostController, modifier: Modifier ){
     NavHost(
         navController = navController,
-        startDestination = Routes.OnboadingPage.name
+        startDestination = Routes.ChoosePage.name
     ){
         composable (Routes.OnboadingPage.name) { OnboadingScreen( navController, modifier)}
         composable (Routes.LoginPage.name){ LoginScreen(navController, modifier ) }
