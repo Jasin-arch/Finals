@@ -67,6 +67,7 @@ dependencies {
     implementation(libs.auth.kt)
     implementation(libs.realtime.kt)
     implementation(libs.storage.kt)
+//    implementation(libs.supabase.kt) // or the latest version
 
     implementation(libs.ktor.client.android)
 
