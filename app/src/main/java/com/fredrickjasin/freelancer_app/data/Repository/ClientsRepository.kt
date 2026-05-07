@@ -11,7 +11,7 @@ class ClientsRepository : ClientsService {
 
     private val supabase = createSupabaseClient(
         supabaseUrl = "https://gysmleptpcahhxoviqpo.supabase.co",
-        supabaseKey = "YOUR_ANON_KEY_HERE"
+        supabaseKey = "sb_publishable_qn2rUEsgR7CAaQFNl1uBYQ_oVxQwGxV"
     ) {
         install(Auth)
         install(Postgrest)
@@ -29,9 +29,6 @@ class ClientsRepository : ClientsService {
             "bio" to client.bio,
             "profile_image" to client.profileImage,
             "location" to client.location,
-            "date_of_birth" to client.dateOfBirth,
-            "rating" to client.rating,
-            "total_reviews" to client.totalReviews
         )
 
         supabase

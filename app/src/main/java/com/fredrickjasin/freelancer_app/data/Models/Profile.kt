@@ -1,17 +1,11 @@
 package com.fredrickjasin.freelancer_app.data.Models
 
-import kotlinx.serialization.Serializable
 
-@Serializable
 data class Profile(
-    val id: String? = null,
-    val email: String? = null,
     val username: String = "",
     val profession: String = "",
     val bio: String = "",
-    val profileImage: String = "",
-    val location: String = "",
     val dateOfBirth: String = "",
-    val rating: Double = 0.0,
-    val totalReviews: Int = 0
+    val profileImage: String = "",
+    val location: String = ""
 )

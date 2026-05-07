@@ -1,4 +1,4 @@
-package com.fredrickjasin.freelancer_app.viewmodel
+package com.fredrickjasin.freelancer_app.UI.Users
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -24,39 +24,23 @@ class ClientsViewModel(
     private val _saved = MutableStateFlow(false)
     val saved: StateFlow<Boolean> = _saved
 
-    fun updateUsername(v: String) {
-        _client.value = _client.value.copy(username = v)
+    fun updateUsername(v: String) = updateClient { copy(username = v) }
+    fun updateCompany(v: String) = updateClient { copy(company = v) }
+    fun updateBio(v: String) = updateClient { copy(bio = v) }
+    fun updateLocation(v: String) = updateClient { copy(location = v) }
+    fun updateProfileImage(v: String) = updateClient { copy(profileImage = v) }
+
+    private fun updateClient(update: Clients.() -> Clients) {
+        _client.value = _client.value.update()
     }
 
-    fun updateCompany(v: String) {
-        _client.value = _client.value.copy(company = v)
-    }
-
-    fun updateBio(v: String) {
-        _client.value = _client.value.copy(bio = v)
-    }
-
-    fun updateDOB(v: String) {
-        _client.value = _client.value.copy(dateOfBirth = v)
-    }
-
-    fun updateLocation(v: String) {
-        _client.value = _client.value.copy(location = v)
-    }
-
-    fun updateProfileImage(v: String) {
-        _client.value = _client.value.copy(profileImage = v)
-    }
-
-    fun saveClient() {
+    fun saveClient(clients: Clients) {
         viewModelScope.launch {
+            _isLoading.value = true
+            _error.value = null
+            _saved.value = false
             try {
-                _isLoading.value = true
-                _error.value = null
-                _saved.value = false
-
                 repository.saveClient(_client.value)
-
                 _saved.value = true
             } catch (e: Exception) {
                 _error.value = e.message
@@ -69,10 +53,9 @@ class ClientsViewModel(
 
     fun loadClient() {
         viewModelScope.launch {
+            _isLoading.value = true
+            _error.value = null
             try {
-                _isLoading.value = true
-                _error.value = null
-
                 val result = repository.getClient()
                 if (result != null) {
                     _client.value = result

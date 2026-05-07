@@ -12,7 +12,7 @@ class ProfilesRepository : ProfileService {
     // ⚠️ Better: move this to a singleton later
     private val supabase = createSupabaseClient(
         supabaseUrl = "https://gysmleptpcahhxoviqpo.supabase.co",
-        supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5c21sZXB0cGNhaGh4b3ZpcXBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5ODM2MDgsImV4cCI6MjA5MjU1OTYwOH0.cgII9h3sr1r-I4E9kX3o__WDvuttdbsj5SX00hA04KI"
+        supabaseKey = "sb_publishable_qn2rUEsgR7CAaQFNl1uBYQ_oVxQwGxV"
     ) {
         install(Auth)
         install(Postgrest)
@@ -33,8 +33,8 @@ class ProfilesRepository : ProfileService {
             "profile_image" to profile.profileImage,
             "location" to profile.location,
             "date_of_birth" to profile.dateOfBirth,
-            "rating" to profile.rating,
-            "total_reviews" to profile.totalReviews
+//            "rating" to profile.rating,
+//            "total_reviews" to profile.totalReviews
         )
 
         try {

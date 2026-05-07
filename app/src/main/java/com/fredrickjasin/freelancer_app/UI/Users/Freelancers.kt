@@ -16,33 +16,35 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil3.compose.rememberAsyncImagePainter
 import com.fredrickjasin.freelancer_app.UI.components.pagepadding
 import com.fredrickjasin.freelancer_app.UI.navigation.Routes
+import com.fredrickjasin.freelancer_app.data.Models.Profile
+import com.fredrickjasin.freelancer_app.viewmodel.FreelancersViewModel
 import com.fredrickjasin.freelancer_app.data.Repository.ProfilesRepository
-import com.fredrickjasin.freelancer_app.viewmodel.FrelancersViewModel
 
 @Composable
 fun FreelancerProfileScreen(
-    navController: NavHostController
+    navController: NavHostController,
+    viewModel: FreelancersViewModel = viewModel()
 ) {
 
     val context = LocalContext.current
-
-    // ⚠️ Temporary ViewModel (OK for now)
-    val viewModel = remember { FrelancersViewModel(ProfilesRepository()) }
+    val viewModel = remember { FreelancersViewModel(ProfilesRepository()) }
 
     val profile by viewModel.profile.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
+    val saved by viewModel.saved.collectAsState()
 
     // Load profile once
     LaunchedEffect(Unit) {
         viewModel.loadProfile()
     }
 
-    // 📸 Image Picker
+    // IMAGE PICKER
     val imagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
@@ -51,15 +53,20 @@ fun FreelancerProfileScreen(
         }
     }
 
+    // SUCCESS TOAST
+    LaunchedEffect(saved) {
+        if (saved) {
+            Toast.makeText(context, "Profile saved successfully", Toast.LENGTH_SHORT).show()
+            viewModel.clearSavedState()
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF6A11CB),
-                        Color(0xFF2575FC)
-                    )
+                    colors = listOf(Color(0xFF6A11CB), Color(0xFF2575FC))
                 )
             )
             .padding(pagepadding),
@@ -121,7 +128,7 @@ fun FreelancerProfileScreen(
                     maxLines = 3
                 )
 
-                // DOB
+                // Date of Birth
                 OutlinedTextField(
                     value = profile.dateOfBirth,
                     onValueChange = viewModel::updateDOB,
@@ -133,9 +140,7 @@ fun FreelancerProfileScreen(
                 Button(
                     onClick = { imagePicker.launch("image/*") },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF6A11CB)
-                    )
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6A11CB))
                 ) {
                     Text("Select Profile Image", color = Color.White)
                 }
@@ -153,29 +158,19 @@ fun FreelancerProfileScreen(
 
                 // LOCATION BUTTON
                 Button(
-                    onClick = {
-                        navController.navigate(Routes.MappickPage.name)
-                    },
+                    onClick = { navController.navigate(Routes.MappickPage.name) },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF2575FC)
-                    )
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2575FC))
                 ) {
                     Text(
-                        if (profile.location.isEmpty())
-                            "Select Location"
-                        else
-                            profile.location,
+                        if (profile.location.isEmpty()) "Select Location" else profile.location,
                         color = Color.White
                     )
                 }
 
-                // ERROR
+                // ERROR DISPLAY
                 error?.let {
-                    Text(
-                        text = it,
-                        color = Color.Red
-                    )
+                    Text(text = it, color = Color.Red, fontWeight = FontWeight.Bold)
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))
@@ -187,16 +182,24 @@ fun FreelancerProfileScreen(
                             Toast.makeText(context, "Fill required fields", Toast.LENGTH_SHORT).show()
                             return@Button
                         }
+                        val userProfile = Profile(
+                            username = profile.username,
+                            profession = profile.profession,
+                            bio = profile.bio,
+                            profileImage = profile.profileImage,
+                            location = profile.location,
 
-                        viewModel.saveProfile()
+
+
+                        )
+
+                        viewModel.saveProfile(userProfile)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFFC5C7D)
-                    ),
-                    shape = RoundedCornerShape(12.dp)
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFC5C7D)),
+                    shape = RoundedCornerShape(24.dp)
                 ) {
                     if (isLoading) {
                         CircularProgressIndicator(

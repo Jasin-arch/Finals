@@ -8,22 +8,29 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class FrelancersViewModel(
+class FreelancersViewModel(
     private val repository: ProfileService
 ) : ViewModel() {
 
+    // Current profile state
     private val _profile = MutableStateFlow(Profile())
     val profile: StateFlow<Profile> = _profile
 
+    // Loading state
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
+    // Error state
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
+    // Save status
     private val _saved = MutableStateFlow(false)
     val saved: StateFlow<Boolean> = _saved
 
+    // -------------------------
+    // Update functions for fields
+    // -------------------------
     fun updateUsername(v: String) {
         _profile.value = _profile.value.copy(username = v)
     }
@@ -48,17 +55,16 @@ class FrelancersViewModel(
         _profile.value = _profile.value.copy(profileImage = v)
     }
 
-    fun saveProfile() {
+
+    fun saveProfile(profile: Profile) {
         viewModelScope.launch {
+            _isLoading.value = true
+            _error.value = null
+            _saved.value = false
+
             try {
-                _isLoading.value = true
-                _error.value = null
-                _saved.value = false
-
                 repository.saveProfile(_profile.value)
-
                 _saved.value = true
-
             } catch (e: Exception) {
                 _error.value = e.message
                 _saved.value = false
@@ -67,20 +73,17 @@ class FrelancersViewModel(
             }
         }
     }
-
 
     fun loadProfile() {
         viewModelScope.launch {
+            _isLoading.value = true
+            _error.value = null
+
             try {
-                _isLoading.value = true
-                _error.value = null
-
                 val result = repository.getProfile()
-
                 if (result != null) {
                     _profile.value = result
                 }
-
             } catch (e: Exception) {
                 _error.value = e.message
             } finally {
@@ -88,6 +91,7 @@ class FrelancersViewModel(
             }
         }
     }
+
 
     fun clearSavedState() {
         _saved.value = false
