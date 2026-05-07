@@ -26,6 +26,8 @@ import androidx.compose.material.icons.filled.Person
 import com.fredrickjasin.freelancer_app.UI.components.pagepadding
 import com.fredrickjasin.freelancer_app.ui.theme.LogIn
 import androidx.compose.material.ripple.rememberRipple
+import com.fredrickjasin.freelancer_app.UI.navigation.Routes
+
 @Composable
 fun ChooseScreen(
     navController: NavHostController,
@@ -118,7 +120,7 @@ fun ChooseScreen(
 //                    indication = rememberRipple(bounded = true),
                     onClick = {
                         // Navigate to Freelancer screen
-                        // navController.navigate(Routes.FreelancerPage.name)
+                         navController.navigate(Routes.FreelancersPage.name)
                     }
                 )
         ) {

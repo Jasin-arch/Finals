@@ -7,5 +7,7 @@ enum class Routes {
     OnboadingPage,
     ChoosePage,
 
-    ProfilePage,
+    MappickPage,
+    FreelancersPage,
+    MapPage
 }
