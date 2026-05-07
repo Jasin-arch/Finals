@@ -9,33 +9,55 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class RegistrationViewModel : ViewModel() {
+
     private val repository = AuthRepository()
+
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
+
     private val _message = MutableStateFlow("")
     val message: StateFlow<String> = _message
+
     fun registerUser(user: UserModel) {
+
         if (user.Email.isBlank() || user.Password.isBlank()) {
-            _message.value = "Email and Password cannot be empty"
+
+            _message.value =
+                "Email and Password cannot be empty"
+
             return
         }
 
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(user.Email).matches()) {
+        if (!android.util.Patterns.EMAIL_ADDRESS
+                .matcher(user.Email)
+                .matches()
+        ) {
+
             _message.value = "Invalid email format"
+
             return
         }
 
         viewModelScope.launch {
+
             _isLoading.value = true
-            _message.value = "Welcome"
 
             try {
+
                 repository.registerUser(user)
 
-                _message.value = "Account created successfully"
+                _message.value =
+                    "Account created successfully"
 
             } catch (e: Exception) {
-                _message.value = e.message ?: "Registration Failed"
+
+                _message.value =
+                    e.message ?: "Registration Failed"
+
+            } finally {
+
+                _isLoading.value = false
+
             }
         }
     }

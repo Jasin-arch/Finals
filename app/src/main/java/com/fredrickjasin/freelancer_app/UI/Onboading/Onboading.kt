@@ -18,9 +18,9 @@ import androidx.navigation.NavHostController
 import com.fredrickjasin.freelancer_app.UI.components.LottiAnimationWidget
 import com.fredrickjasin.freelancer_app.UI.components.pagepadding
 import com.fredrickjasin.freelancer_app.UI.navigation.Routes
-import com.fredrickjasin.freelancer_app.ui.theme.Both
-import com.fredrickjasin.freelancer_app.ui.theme.LogIn
-import com.fredrickjasin.freelancer_app.ui.theme.onboading
+import com.fredrickjasin.freelancer_app.UI.theme.Both
+import com.fredrickjasin.freelancer_app.UI.theme.LogIn
+import com.fredrickjasin.freelancer_app.UI.theme.onboading
 
 @Composable
 fun OnboadingScreen(

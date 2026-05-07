@@ -12,5 +12,7 @@ enum class Routes {
     ClientsPage,
     ReviewsPage,
     HomePage,
-    MapPage
+    MapPage,
+    DashboardPage,
+    SettingsPage
 }

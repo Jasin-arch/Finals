@@ -1,67 +1,49 @@
 package com.fredrickjasin.freelancer_app.data.Repository
-import com.fredrickjasin.freelancer_app.data.Models.Profile
-import io.github.jan.supabase.createSupabaseClient
-import io.github.jan.supabase.auth.Auth
-import io.github.jan.supabase.auth.auth
-import io.github.jan.supabase.postgrest.Postgrest
-import io.github.jan.supabase.postgrest.from
-import io.github.jan.supabase.storage.Storage
 
-class ProfilesRepository : ProfileService {
+import com.fredrickjasin.freelancer_app.data.Models.FreelancerProfile
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.tasks.await
 
-    // ⚠️ Better: move this to a singleton later
-    private val supabase = createSupabaseClient(
-        supabaseUrl = "https://gysmleptpcahhxoviqpo.supabase.co",
-        supabaseKey = "sb_publishable_qn2rUEsgR7CAaQFNl1uBYQ_oVxQwGxV"
-    ) {
-        install(Auth)
-        install(Postgrest)
-        install(Storage)
-    }
+class ProfilesRepository {
 
-    override suspend fun saveProfile(profile: Profile) {
+    private val auth = FirebaseAuth.getInstance()
+    private val firestore = FirebaseFirestore.getInstance()
 
-        val user = supabase.auth.currentUserOrNull()
-            ?: throw Exception("User not logged in")
+    // Using a constant for the collection name prevents typos
+    private val COLLECTION_NAME = "Freelancers"
 
-        val data = mapOf(
-            "id" to user.id,
-            "email" to (user.email ?: ""),
-            "username" to profile.username,
-            "profession" to profile.profession,
-            "bio" to profile.bio,
-            "profile_image" to profile.profileImage,
-            "location" to profile.location,
-            "date_of_birth" to profile.dateOfBirth,
-//            "rating" to profile.rating,
-//            "total_reviews" to profile.totalReviews
-        )
+    suspend fun fetchProfile(userId: String): FreelancerProfile {
+        return try {
+            val snapshot = firestore.collection(COLLECTION_NAME)
+                .document(userId)
+                .get()
+                .await()
 
-        try {
-            supabase
-                .from("Profiles")
-                .upsert(data)
+            // Try to convert the document to our data class
+            // If it doesn't exist, it returns a new profile with that ID
+            snapshot.toObject(FreelancerProfile::class.java) ?: FreelancerProfile(id = userId)
         } catch (e: Exception) {
-            throw Exception("Failed to save profile: ${e.message}")
+            // Log the error for debugging
+            println("Error fetching profile: ${e.message}")
+            FreelancerProfile(id = userId)
         }
     }
 
-    override suspend fun getProfile(): Profile? {
+    suspend fun saveProfile(profile: FreelancerProfile) {
+        // We use the ID already stored in the profile object
+        // or fall back to the currently logged-in user's UID
+        val uid = profile.id.ifBlank { auth.currentUser?.uid }
+            ?: throw Exception("User must be logged in to save a profile")
 
-        val user = supabase.auth.currentUserOrNull()
-            ?: return null
-
-        return try {
-            supabase
-                .from("Profiles")
-                .select {
-                    filter {
-                        eq("id", user.id)
-                    }
-                }
-                .decodeSingleOrNull<Profile>()
+        try {
+            firestore.collection(COLLECTION_NAME)
+                .document(uid)
+                .set(profile)
+                .await()
         } catch (e: Exception) {
-            null
+            println("Error saving profile: ${e.message}")
+            throw e
         }
     }
 }

@@ -30,6 +30,7 @@ class ForgotPasswordViewModel(
     }
 
     fun resetPassword() {
+
         val emailValue = _email.value.trim()
 
         if (emailValue.isEmpty()) {
@@ -38,19 +39,25 @@ class ForgotPasswordViewModel(
         }
 
         viewModelScope.launch {
+
             _isLoading.value = true
-            _error.value = null
-            _successMessage.value = null
 
             try {
+
                 repository.resetPassword(emailValue)
 
-                _successMessage.value = "Password reset email sent successfully"
+                _successMessage.value =
+                    "Password reset email sent successfully"
 
             } catch (e: Exception) {
-                _error.value = e.message ?: "Failed to send reset email"
+
+                _error.value =
+                    e.message ?: "Failed to send reset email"
+
             } finally {
+
                 _isLoading.value = false
+
             }
         }
     }

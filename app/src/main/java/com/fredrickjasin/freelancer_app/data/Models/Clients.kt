@@ -1,14 +1,11 @@
 package com.fredrickjasin.freelancer_app.data.Models
 
-import kotlinx.serialization.Serializable
-@Serializable
 data class Clients(
-    val id: String? = null,
-    val email: String? = null,
+    val id: String = "",           // This will match the Firebase Auth UID
     val username: String = "",
     val company: String = "",
     val bio: String = "",
-    val profileImage: String = "",
     val location: String = "",
+    val profileImage: String = "",
+    val userType: String = "client" // Helps distinguish between users in the DB
 )
-

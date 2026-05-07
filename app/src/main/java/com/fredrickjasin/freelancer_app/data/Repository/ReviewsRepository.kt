@@ -1,36 +1,98 @@
 package com.fredrickjasin.freelancer_app.data.Repository
 
 import com.fredrickjasin.freelancer_app.data.Models.Reviews
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import kotlinx.coroutines.tasks.await
 
 class ReviewsRepository : ReviewsService {
 
-    // In-memory storage for reviews
-    private val reviews = mutableListOf<Reviews>()
-    private var nextId = 1
+    private val db = FirebaseFirestore.getInstance()
+    private val collection = db.collection("reviews")
 
-    override suspend fun saveReview(review: Reviews): Reviews? = withContext(Dispatchers.IO) {
-        // Assign an ID if not already set
-        val reviewWithId = review.copy(id = nextId++)
-        reviews.add(reviewWithId)
-        return@withContext reviewWithId
-    }
+    // -----------------------------
+    // SAVE REVIEW
+    // -----------------------------
+    override suspend fun saveReview(review: Reviews): Reviews? {
+        return try {
 
-    override suspend fun getReviewsByFreelancer(freelancerId: String): List<Reviews> =
-        withContext(Dispatchers.IO) {
-            reviews.filter { it.freelancerId == freelancerId }
+            val docRef = collection.document()
+
+            val data = review.copy(
+                id = docRef.id
+            )
+
+            docRef.set(data).await()
+
+            data
+
+        } catch (e: Exception) {
+            throw Exception("Failed to save review: ${e.message}")
         }
-
-    override suspend fun getAverageRating(freelancerId: String): Double = withContext(Dispatchers.IO) {
-        val freelancerReviews = reviews.filter { it.freelancerId == freelancerId }
-        if (freelancerReviews.isEmpty()) 0.0
-        else freelancerReviews.map { it.rating.toDouble() }.average()
     }
 
-    override suspend fun deleteReview(reviewId: Int) {
-        withContext(Dispatchers.IO) {
-            reviews.removeAll { it.id == reviewId }
+    // -----------------------------
+    // GET REVIEWS
+    // -----------------------------
+    override suspend fun getReviewsByFreelancer(
+        freelancerId: String
+    ): List<Reviews> {
+
+        return try {
+
+            val snapshot = collection
+                .whereEqualTo("freelancerId", freelancerId)
+                .orderBy("createdAt", Query.Direction.DESCENDING)
+                .get()
+                .await()
+
+            snapshot.documents.mapNotNull {
+
+                it.toObject(Reviews::class.java)
+            }
+
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    // -----------------------------
+    // AVERAGE RATING
+    // -----------------------------
+    override suspend fun getAverageRating(
+        freelancerId: String
+    ): Double {
+
+        return try {
+
+            val reviews = getReviewsByFreelancer(freelancerId)
+
+            if (reviews.isEmpty()) return 0.0
+
+            reviews.map { it.rating }
+                .average()
+
+        } catch (e: Exception) {
+            0.0
+        }
+    }
+
+    // -----------------------------
+    // DELETE REVIEW
+    // -----------------------------
+    override suspend fun deleteReview(
+        reviewId: String
+    ) {
+
+        try {
+
+            collection
+                .document(reviewId)
+                .delete()
+                .await()
+
+        } catch (e: Exception) {
+            throw Exception("Failed to delete review: ${e.message}")
         }
     }
 }

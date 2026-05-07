@@ -1,30 +1,13 @@
 package com.fredrickjasin.freelancer_app.UI.Users
 
 import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -33,139 +16,179 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import coil3.compose.rememberAsyncImagePainter
-import com.fredrickjasin.freelancer_app.UI.components.pagepadding
+import com.fredrickjasin.freelancer_app.UI.navigation.Routes
 import com.fredrickjasin.freelancer_app.data.Models.Clients
-import com.fredrickjasin.freelancer_app.data.Repository.ClientsRepository
-import io.github.jan.supabase.realtime.Column
-
 
 @Composable
 fun ClientProfileScreen(
-    modifier: Modifier,
-    navController: NavHostController
+    navController: NavHostController,
+    userId: String,
+    modifier: Modifier = Modifier,
+    // Change this line:
+    clientViewModel: ClientsViewModel = viewModel(
+        factory = ClientsViewModelFactory(com.fredrickjasin.freelancer_app.data.Repository.ClientsRepository())
+    )
 ) {
+    // ... rest of your code ...
+
     val context = LocalContext.current
-    val viewModel = remember { ClientsViewModel(ClientsRepository()) }
 
-    val client by viewModel.client.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-    val error by viewModel.error.collectAsState()
-    val saved by viewModel.saved.collectAsState()
+    // Observe state from ViewModel
+    val client by clientViewModel.client.collectAsState()
+    val isLoading by clientViewModel.isLoading.collectAsState()
+    val error by clientViewModel.error.collectAsState()
+    val saved by clientViewModel.saved.collectAsState()
 
-    val imagePicker = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri ->
-        uri?.let { viewModel.updateProfileImage(it.toString()) }
+    // 1. Load data as soon as the screen is displayed
+    LaunchedEffect(Unit) {
+        clientViewModel.loadClient()
     }
 
-    LaunchedEffect(Unit) { viewModel.loadClient() }
-
+    // 2. Handle the "Saved" state to navigate away
     LaunchedEffect(saved) {
         if (saved) {
-            Toast.makeText(context, "Client profile saved", Toast.LENGTH_SHORT).show()
-            viewModel.clearSavedState()
+            Toast.makeText(context, "Profile Created Successfully!", Toast.LENGTH_SHORT).show()
+            clientViewModel.clearSavedState()
+
+            navController.navigate(Routes.HomePage.name) {
+                // Clear the stack so user can't "back" into the profile creation
+                popUpTo(Routes.ChoosePage.name) { inclusive = true }
+                launchSingleTop = true
+            }
         }
     }
 
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Brush.verticalGradient(listOf(Color(0xFF6A11CB), Color(0xFF2575FC))))
-            .padding(pagepadding),
+            .background(
+                Brush.verticalGradient(
+                    listOf(Color(0xFF6A11CB), Color(0xFF2575FC))
+                )
+            )
+            .padding(20.dp)
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Spacer(modifier = Modifier.height(40.dp))
 
         Text(
-            text = "Client Profile",
-            fontSize = 24.sp,
+            text = "Complete Your Profile",
+            fontSize = 26.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.White,
-            modifier = Modifier.padding(vertical = 20.dp)
+            color = Color.White
         )
 
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Tell us about your business",
+            color = Color.White.copy(alpha = 0.8f),
+            fontSize = 14.sp
+        )
+
+        Spacer(modifier = Modifier.height(30.dp))
+
+        /* --- INPUT FORM CARD --- */
         Card(
-            shape = RoundedCornerShape(25.dp),
+            shape = RoundedCornerShape(24.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White),
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
+            elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
+            modifier = Modifier.fillMaxWidth()
         ) {
             Column(
-                modifier = Modifier.padding(20.dp).fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                modifier = Modifier.padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
 
-                Text(
-                    "Client Details",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF333333)
-                )
-
+                // Username
                 OutlinedTextField(
                     value = client.username,
-                    onValueChange = viewModel::updateUsername,
-                    label = { Text("Username") },
-                    modifier = Modifier.fillMaxWidth()
+                    onValueChange = clientViewModel::updateUsername,
+                    label = { Text("Display Name") },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp)
                 )
 
+                // Company
                 OutlinedTextField(
                     value = client.company,
-                    onValueChange = viewModel::updateCompany,
-                    label = { Text("Company") },
-                    modifier = Modifier.fillMaxWidth()
+                    onValueChange = clientViewModel::updateCompany,
+                    label = { Text("Company Name") },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp)
                 )
 
+                // Bio
                 OutlinedTextField(
                     value = client.bio,
-                    onValueChange = viewModel::updateBio,
-                    label = { Text("Bio") },
-                    modifier = Modifier.fillMaxWidth(),
-                    maxLines = 3
+                    onValueChange = clientViewModel::updateBio,
+                    label = { Text("About your business") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(130.dp),
+                    shape = RoundedCornerShape(12.dp)
                 )
 
-
-
-                Button(
-                    onClick = { imagePicker.launch("image/*") },
+                // Location
+                OutlinedTextField(
+                    value = client.location,
+                    onValueChange = clientViewModel::updateLocation,
+                    label = { Text("Location") },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6A11CB))
-                ) { Text("Select Profile Image", color = Color.White) }
+                    shape = RoundedCornerShape(12.dp)
+                )
 
-                if (client.profileImage.isNotEmpty()) {
-                    Image(
-                        painter = rememberAsyncImagePainter(client.profileImage),
-                        contentDescription = null,
-                        modifier = Modifier.size(100.dp).align(Alignment.CenterHorizontally)
+                // Error Feedback
+                error?.let {
+                    Text(
+                        text = it,
+                        color = Color.Red,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium
                     )
                 }
 
-                error?.let { Text(it, color = Color.Red) }
+                Spacer(modifier = Modifier.height(10.dp))
 
+                // SAVE BUTTON
                 Button(
                     onClick = {
-                        val userClients = Clients(
-                            username = client.username,
-                            company = client.company,
-                            bio = client.bio,
-                            profileImage = client.profileImage,
-                            location = client.location
-
-
-                        )
-                        viewModel.saveClient(userClients)
-                              },
-                    modifier = Modifier.fillMaxWidth().height(50.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFC5C7D)),
-                    shape = RoundedCornerShape(24.dp)
-                ) {
-                    if (isLoading) CircularProgressIndicator(
-                        color = Color.White,
-                        modifier = Modifier.size(20.dp)
+                        if (client.username.isNotEmpty()) {
+                            val userClients = Clients(
+                                username = client.username,
+                                company = client.company,
+                                bio = client.bio,
+                                location = client.location
+                            )
+                            clientViewModel.saveClient(userClients)
+                        } else {
+                            Toast.makeText(context, "Please enter a name", Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(55.dp),
+                    shape = RoundedCornerShape(14.dp),
+                    enabled = !isLoading,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF2575FC)
                     )
-                    else Text("Save Profile", color = Color.White)
+                ) {
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            color = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    } else {
+                        Text(
+                            text = "Get Started",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
         }

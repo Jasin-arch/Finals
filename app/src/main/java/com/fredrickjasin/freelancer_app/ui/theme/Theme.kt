@@ -1,4 +1,4 @@
-package com.fredrickjasin.freelancer_app.ui.theme
+package com.fredrickjasin.freelancer_app.UI.theme
 
 import android.app.Activity
 import android.os.Build

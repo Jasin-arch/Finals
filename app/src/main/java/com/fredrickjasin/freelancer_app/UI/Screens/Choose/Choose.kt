@@ -9,7 +9,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -24,14 +23,14 @@ import androidx.navigation.NavHostController
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import com.fredrickjasin.freelancer_app.UI.components.pagepadding
-import com.fredrickjasin.freelancer_app.ui.theme.LogIn
-import androidx.compose.material.ripple.rememberRipple
+import com.fredrickjasin.freelancer_app.UI.theme.LogIn
 import com.fredrickjasin.freelancer_app.UI.navigation.Routes
+import com.google.firebase.auth.FirebaseAuth // ADDED THIS
 
 @Composable
 fun ChooseScreen(
     navController: NavHostController,
-    modifier: Modifier
+    modifier: Modifier,
 ) {
     Column(
         verticalArrangement = Arrangement.Center,
@@ -41,7 +40,6 @@ fun ChooseScreen(
             .padding(pagepadding)
     ) {
 
-        // Welcome text
         Text(
             text = "Welcome! Please Choose your Area",
             style = TextStyle(
@@ -53,62 +51,42 @@ fun ChooseScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // ---------------------------
         // Card 1: Client
-        // ---------------------------
         Card(
             shape = RoundedCornerShape(20.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(140.dp)
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-//                    indication = rememberRipple(bounded = true),
-                    onClick = {
-                        // Navigate to Client screen
-                         navController.navigate(Routes.ClientsPage.name)
-                    }
-                )
-        ) {
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(140.dp)
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        // Inside ChooseScreen.kt for the Client Card
+                        onClick = {
+                            val uid = FirebaseAuth.getInstance().currentUser?.uid
+                            if (uid != null) {
+                                // You MUST append the ID to the route name
+                                navController.navigate("${Routes.ClientsPage.name}/$uid")
+                            } else {
+                                navController.navigate(Routes.LoginPage.name)
+                            }
+                        }
+                    )
+            ){
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(
-                        Brush.linearGradient(
-                            colors = listOf(Color(0xFF6A11CB), Color(0xFF2575FC))
-                        )
-                    ),
+                    .background(Brush.linearGradient(listOf(Color(0xFF6A11CB), Color(0xFF2575FC)))),
                 contentAlignment = Alignment.Center
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(40.dp)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "I am a Client",
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp
-                    )
-                    Text(
-                        text = "Hire freelancers easily",
-                        color = Color.White.copy(0.8f),
-                        fontSize = 12.sp
-                    )
-                }
+                // ... (Keep your existing Icon/Text here)
+                Text("I am a Client", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
             }
         }
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // ---------------------------
         // Card 2: Freelancer
-        // ---------------------------
         Card(
             shape = RoundedCornerShape(20.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
@@ -117,31 +95,27 @@ fun ChooseScreen(
                 .height(140.dp)
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
-//                    indication = rememberRipple(bounded = true),
+                    indication = null,
                     onClick = {
-                        // Navigate to Freelancer screen
-                         navController.navigate(Routes.FreelancersPage.name)
+                        // GET THE CURRENT USER UID
+                        val uid = FirebaseAuth.getInstance().currentUser?.uid
+                        if (uid != null) {
+                            // NAVIGATE WITH THE UID
+                            navController.navigate("${Routes.FreelancersPage.name}/$uid")
+                        } else {
+                            // Optionally handle case where user is not logged in
+                            navController.navigate(Routes.LoginPage.name)
+                        }
                     }
                 )
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(
-                        Brush.linearGradient(
-                            colors = listOf(Color(0xFFFC5C7D), Color(0xFF6A82FB))
-                        )
-                    ),
+                    .background(Brush.linearGradient(listOf(Color(0xFFFC5C7D), Color(0xFF6A82FB)))),
                 contentAlignment = Alignment.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-//                    Icon(
-//                        imageVector = Icons.Default.Work,
-//                        contentDescription = null,
-//                        tint = Color.White,
-//                        modifier = Modifier.size(40.dp)
-//                    )
-                    Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = "I am a Freelancer",
                         color = Color.White,

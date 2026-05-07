@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "132130828338",
+    "project_id": "freelancers-app-cc703",
+    "storage_bucket": "freelancers-app-cc703.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:132130828338:android:c656a85a153c695dcbcc2b",
+        "android_client_info": {
+          "package_name": "com.fredrickjasin.freelancer_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUK2CYbHesNPtURLdIcoJkf-uq61koyNs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

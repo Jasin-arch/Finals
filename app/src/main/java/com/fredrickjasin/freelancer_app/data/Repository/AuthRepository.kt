@@ -1,45 +1,44 @@
 package com.fredrickjasin.freelancer_app.data.Repository
+
 import com.fredrickjasin.freelancer_app.data.Models.UserModel
-import io.github.jan.supabase.auth.Auth
-import io.github.jan.supabase.auth.auth
-import io.github.jan.supabase.auth.providers.builtin.Email
-import io.github.jan.supabase.createSupabaseClient
-import io.github.jan.supabase.postgrest.Postgrest
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.tasks.await
 
-class AuthRepository: AuthService {
-    val supabase = createSupabaseClient(
-        supabaseUrl = "https://gysmleptpcahhxoviqpo.supabase.co",
-        supabaseKey = "sb_publishable_qn2rUEsgR7CAaQFNl1uBYQ_oVxQwGxV"
-    )  {
-        install(Postgrest)
-        install(Auth)
+class AuthRepository : AuthService {
+
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+
+    override suspend fun registerUser(userDetails: UserModel) {
+
+        auth.createUserWithEmailAndPassword(
+            userDetails.Email,
+            userDetails.Password
+        ).await()
+
     }
 
+    override suspend fun loginUser(userDetails: UserModel) {
 
-    override suspend fun registerUser(userDetails: UserModel)  {
-        supabase.auth.signUpWith(Email) {
-            email = userDetails.Email
-            password = userDetails.Password
-        }
-    }
+        auth.signInWithEmailAndPassword(
+            userDetails.Email,
+            userDetails.Password
+        ).await()
 
-    override suspend fun loginUser(userDetails: UserModel)  {
-        val user = supabase.auth.signInWith(Email) {
-            email = userDetails.Email
-            password = userDetails.Password
-        }
     }
 
     override suspend fun resetPassword(email: String) {
-        supabase.auth.resetPasswordForEmail(email = email)
+
+        auth.sendPasswordResetEmail(email).await()
+
     }
 
     override suspend fun getUserProfile(user: UserModel) {
-//        TODO("Not yet implemented")
+        // Optional later
     }
 
     override suspend fun logoutUser() {
-        supabase.auth.signOut()
-    }
 
+        auth.signOut()
+
+    }
 }

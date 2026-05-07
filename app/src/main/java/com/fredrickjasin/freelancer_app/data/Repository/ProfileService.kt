@@ -1,8 +1,11 @@
-package com.fredrickjasin.freelancer_app.data.Repository
+package com.fredrickjasin.freelancer_app.data.remote
 
-import com.fredrickjasin.freelancer_app.data.Models.Profile
+import com.fredrickjasin.freelancer_app.data.Models.FreelancerProfile
 
-interface ProfileService {
-    suspend fun saveProfile(profile: Profile)
-    suspend fun getProfile(): Profile?
+interface FreelancerApiService {
+
+    suspend fun getProfile(userId: String): FreelancerProfile
+
+    suspend fun updateProfile(profile: FreelancerProfile)
+
 }

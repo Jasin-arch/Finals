@@ -12,7 +12,6 @@ class LoginViewModel(
     private val repository: AuthRepository = AuthRepository()
 ) : ViewModel() {
 
-    // Individual states instead of a data class
     private val _email = MutableStateFlow("")
     val email: StateFlow<String> = _email
 
@@ -39,20 +38,26 @@ class LoginViewModel(
     }
 
     fun loginUser() {
+
         val emailValue = _email.value.trim()
         val passwordValue = _password.value.trim()
 
         if (emailValue.isEmpty() || passwordValue.isEmpty()) {
-            _error.value = "Email and Password cannot be empty"
+
+            _error.value =
+                "Email and Password cannot be empty"
+
             return
         }
 
         viewModelScope.launch {
+
             _isLoading.value = true
             _error.value = null
             _success.value = false
 
             try {
+
                 val user = UserModel(
                     Email = emailValue,
                     Password = passwordValue
@@ -63,7 +68,14 @@ class LoginViewModel(
                 _success.value = true
 
             } catch (e: Exception) {
-                _error.value = e.message ?: "Login Failed"
+
+                _error.value =
+                    e.message ?: "Login Failed"
+
+            } finally {
+
+                _isLoading.value = false
+
             }
         }
     }

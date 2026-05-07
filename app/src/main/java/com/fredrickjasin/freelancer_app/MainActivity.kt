@@ -17,17 +17,9 @@ import androidx.navigation.compose.rememberNavController
 import com.fredrickjasin.freelancer_app.UI.Screens.Login.LoginScreen
 import com.fredrickjasin.freelancer_app.UI.Screens.SignUp.RegistrationScreen
 import com.fredrickjasin.freelancer_app.UI.navigation.AppNavigation
-import com.fredrickjasin.freelancer_app.ui.theme.FreeLancer_AppTheme
+import com.fredrickjasin.freelancer_app.UI.theme.FreeLancer_AppTheme
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
-
-
-val supabase = createSupabaseClient(
-    supabaseUrl = "https://gysmleptpcahhxoviqpo.supabase.co",
-    supabaseKey = "sb_publishable_qn2rUEsgR7CAaQFNl1uBYQ_oVxQwGxV"
-    ) {
-    install(Postgrest)
-    }
 
 
     class MainActivity : ComponentActivity() {
