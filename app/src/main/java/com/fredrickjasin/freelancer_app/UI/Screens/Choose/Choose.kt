@@ -67,7 +67,7 @@ fun ChooseScreen(
 //                    indication = rememberRipple(bounded = true),
                     onClick = {
                         // Navigate to Client screen
-                        // navController.navigate(Routes.ClientPage.name)
+                         navController.navigate(Routes.ClientsPage.name)
                     }
                 )
         ) {

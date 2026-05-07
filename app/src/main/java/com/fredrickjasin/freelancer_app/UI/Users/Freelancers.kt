@@ -18,37 +18,26 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil3.compose.rememberAsyncImagePainter
-//import coil.compose.rememberAsyncImagePainter
 import com.fredrickjasin.freelancer_app.UI.components.pagepadding
 import com.fredrickjasin.freelancer_app.UI.navigation.Routes
-import com.fredrickjasin.freelancer_app.data.Repository.ProfileRepository
-import com.fredrickjasin.freelancer_app.viewmodel.ProfileViewModel
+import com.fredrickjasin.freelancer_app.data.Repository.ProfilesRepository
+import com.fredrickjasin.freelancer_app.viewmodel.FrelancersViewModel
 
 @Composable
 fun FreelancerProfileScreen(
-    modifier: Modifier = Modifier,
     navController: NavHostController
 ) {
 
     val context = LocalContext.current
 
-    // ⚠️ Temporary ViewModel (later use Hilt)
-    val viewModel = remember { ProfileViewModel(ProfileRepository()) }
+    // ⚠️ Temporary ViewModel (OK for now)
+    val viewModel = remember { FrelancersViewModel(ProfilesRepository()) }
 
     val profile by viewModel.profile.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
 
-    // 📍 Location from Map Picker
-    val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
-    val location = savedStateHandle?.get<String>("location")
-
-    LaunchedEffect(location) {
-        location?.let {
-            viewModel.updateLocation(it)
-        }
-    }
-
+    // Load profile once
     LaunchedEffect(Unit) {
         viewModel.loadProfile()
     }
@@ -77,7 +66,7 @@ fun FreelancerProfileScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        // 🌟 Header
+        // HEADER
         Text(
             text = "Complete Your Profile",
             fontSize = 24.sp,
@@ -86,7 +75,6 @@ fun FreelancerProfileScreen(
             modifier = Modifier.padding(top = 20.dp, bottom = 20.dp)
         )
 
-        // 🧾 White Card Container
         Card(
             shape = RoundedCornerShape(25.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -105,8 +93,7 @@ fun FreelancerProfileScreen(
                 Text(
                     text = "Freelancer Details",
                     fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF333333)
+                    fontWeight = FontWeight.Bold
                 )
 
                 // Username
@@ -142,7 +129,7 @@ fun FreelancerProfileScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                // 📸 Image Picker Button
+                // IMAGE BUTTON
                 Button(
                     onClick = { imagePicker.launch("image/*") },
                     modifier = Modifier.fillMaxWidth(),
@@ -153,20 +140,22 @@ fun FreelancerProfileScreen(
                     Text("Select Profile Image", color = Color.White)
                 }
 
-                // Image Preview
+                // IMAGE PREVIEW
                 if (profile.profileImage.isNotEmpty()) {
                     Image(
                         painter = rememberAsyncImagePainter(profile.profileImage),
                         contentDescription = null,
                         modifier = Modifier
-                            .size(90.dp)
+                            .size(100.dp)
                             .align(Alignment.CenterHorizontally)
                     )
                 }
 
-                // 🗺️ Location Button
+                // LOCATION BUTTON
                 Button(
-                    onClick = { navController.navigate(Routes.MappickPage.name) },
+                    onClick = {
+                        navController.navigate(Routes.MappickPage.name)
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF2575FC)
@@ -181,7 +170,7 @@ fun FreelancerProfileScreen(
                     )
                 }
 
-                // ❌ Error
+                // ERROR
                 error?.let {
                     Text(
                         text = it,
@@ -191,7 +180,7 @@ fun FreelancerProfileScreen(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                // 💾 Save Button
+                // SAVE BUTTON
                 Button(
                     onClick = {
                         if (profile.username.isBlank() || profile.profession.isBlank()) {
@@ -200,7 +189,6 @@ fun FreelancerProfileScreen(
                         }
 
                         viewModel.saveProfile()
-                        Toast.makeText(context, "Saving...", Toast.LENGTH_SHORT).show()
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -210,11 +198,14 @@ fun FreelancerProfileScreen(
                     ),
                     shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text(
-                        if (isLoading) "Saving..."
-                        else "Save Profile",
-                        color = Color.White
-                    )
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            color = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    } else {
+                        Text("Save Profile", color = Color.White)
+                    }
                 }
             }
         }

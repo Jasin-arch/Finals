@@ -182,7 +182,7 @@ fun RegistrationScreen(
             CircularProgressIndicator()
         } else {
             OutlinedButton(
-                onClick = {
+                onClick = { navController.navigate(Routes.ChoosePage.name)
                     val user = UserModel(
                         Email = email.text,
                         Password = passwordInput.text

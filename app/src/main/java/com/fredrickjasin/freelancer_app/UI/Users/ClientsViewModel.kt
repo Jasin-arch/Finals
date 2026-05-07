@@ -2,18 +2,18 @@ package com.fredrickjasin.freelancer_app.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fredrickjasin.freelancer_app.data.Models.Profile
-import com.fredrickjasin.freelancer_app.data.Repository.ProfileService
+import com.fredrickjasin.freelancer_app.data.Models.Clients
+import com.fredrickjasin.freelancer_app.data.Repository.ClientsService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class FrelancersViewModel(
-    private val repository: ProfileService
+class ClientsViewModel(
+    private val repository: ClientsService
 ) : ViewModel() {
 
-    private val _profile = MutableStateFlow(Profile())
-    val profile: StateFlow<Profile> = _profile
+    private val _client = MutableStateFlow(Clients())
+    val client: StateFlow<Clients> = _client
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
@@ -25,40 +25,39 @@ class FrelancersViewModel(
     val saved: StateFlow<Boolean> = _saved
 
     fun updateUsername(v: String) {
-        _profile.value = _profile.value.copy(username = v)
+        _client.value = _client.value.copy(username = v)
     }
 
-    fun updateProfession(v: String) {
-        _profile.value = _profile.value.copy(profession = v)
+    fun updateCompany(v: String) {
+        _client.value = _client.value.copy(company = v)
     }
 
     fun updateBio(v: String) {
-        _profile.value = _profile.value.copy(bio = v)
+        _client.value = _client.value.copy(bio = v)
     }
 
     fun updateDOB(v: String) {
-        _profile.value = _profile.value.copy(dateOfBirth = v)
+        _client.value = _client.value.copy(dateOfBirth = v)
     }
 
     fun updateLocation(v: String) {
-        _profile.value = _profile.value.copy(location = v)
+        _client.value = _client.value.copy(location = v)
     }
 
     fun updateProfileImage(v: String) {
-        _profile.value = _profile.value.copy(profileImage = v)
+        _client.value = _client.value.copy(profileImage = v)
     }
 
-    fun saveProfile() {
+    fun saveClient() {
         viewModelScope.launch {
             try {
                 _isLoading.value = true
                 _error.value = null
                 _saved.value = false
 
-                repository.saveProfile(_profile.value)
+                repository.saveClient(_client.value)
 
                 _saved.value = true
-
             } catch (e: Exception) {
                 _error.value = e.message
                 _saved.value = false
@@ -68,19 +67,16 @@ class FrelancersViewModel(
         }
     }
 
-
-    fun loadProfile() {
+    fun loadClient() {
         viewModelScope.launch {
             try {
                 _isLoading.value = true
                 _error.value = null
 
-                val result = repository.getProfile()
-
+                val result = repository.getClient()
                 if (result != null) {
-                    _profile.value = result
+                    _client.value = result
                 }
-
             } catch (e: Exception) {
                 _error.value = e.message
             } finally {

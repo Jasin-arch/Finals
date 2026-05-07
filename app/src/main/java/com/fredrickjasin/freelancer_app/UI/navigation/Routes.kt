@@ -9,5 +9,6 @@ enum class Routes {
 
     MappickPage,
     FreelancersPage,
+    ClientsPage,
     MapPage
 }

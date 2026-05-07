@@ -11,21 +11,24 @@ import com.fredrickjasin.freelancer_app.UI.Screens.Choose.MapPickerScreen
 import com.fredrickjasin.freelancer_app.UI.Screens.ForgotPassword.ForgotPasswordScreen
 import com.fredrickjasin.freelancer_app.UI.Screens.Login.LoginScreen
 import com.fredrickjasin.freelancer_app.UI.Screens.SignUp.RegistrationScreen
+import com.fredrickjasin.freelancer_app.UI.Users.ClientProfileScreen
 import com.fredrickjasin.freelancer_app.UI.Users.FreelancerProfileScreen
 
 @Composable
 fun AppNavigation(navController: NavHostController, modifier: Modifier ){
     NavHost(
         navController = navController,
-        startDestination = Routes.ChoosePage.name
+        startDestination = Routes.OnboadingPage.name
     ){
         composable (Routes.OnboadingPage.name) { OnboadingScreen( navController, modifier)}
         composable (Routes.LoginPage.name){ LoginScreen(navController, modifier ) }
         composable (Routes.SignUpPage.name){ RegistrationScreen(navController, modifier ) }
         composable (Routes.ForgotPasswordPage.name){ ForgotPasswordScreen(navController, modifier) }
         composable (Routes.ChoosePage.name){ ChooseScreen(navController, modifier) }
-        composable (Routes.FreelancersPage.name){ FreelancerProfileScreen(modifier, navController) }
+        composable (Routes.FreelancersPage.name){ FreelancerProfileScreen( navController) }
         composable (Routes.MappickPage.name){ MapPickerScreen(modifier, navController) }
+        composable (Routes.ClientsPage.name){ ClientProfileScreen(modifier, navController) }
+
 
 
 
