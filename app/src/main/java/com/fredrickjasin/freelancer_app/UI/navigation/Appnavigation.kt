@@ -25,13 +25,14 @@ import com.fredrickjasin.freelancer_app.UI.Users.FrelancersViewModel
 
 @Composable
 fun AppNavigation(
+
     navController: NavHostController,
     modifier: Modifier
 ) {
 
     NavHost(
         navController = navController,
-        startDestination = Routes.LoginPage.name
+        startDestination = Routes.ChoosePage.name
     ) {
 
 

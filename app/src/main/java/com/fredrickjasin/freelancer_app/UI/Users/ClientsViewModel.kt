@@ -1,5 +1,4 @@
 package com.fredrickjasin.freelancer_app.UI.Users
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -28,38 +27,44 @@ class ClientsViewModel(
     private val _saved = MutableStateFlow(false)
     val saved: StateFlow<Boolean> = _saved
 
+
     fun updateUsername(value: String) {
 
-        _client.value =
-            _client.value.copy(username = value)
+        _client.value = _client.value.copy(
+            username = value
+        )
 
     }
 
     fun updateCompany(value: String) {
 
-        _client.value =
-            _client.value.copy(company = value)
+        _client.value = _client.value.copy(
+            company = value
+        )
 
     }
 
     fun updateBio(value: String) {
 
-        _client.value =
-            _client.value.copy(bio = value)
+        _client.value = _client.value.copy(
+            bio = value
+        )
 
     }
 
     fun updateLocation(value: String) {
 
-        _client.value =
-            _client.value.copy(location = value)
+        _client.value = _client.value.copy(
+            location = value
+        )
 
     }
 
     fun updateProfileImage(value: String) {
 
-        _client.value =
-            _client.value.copy(profileImage = value)
+        _client.value = _client.value.copy(
+            profileImage = value
+        )
 
     }
 
@@ -69,7 +74,15 @@ class ClientsViewModel(
         val currentUid =
             FirebaseAuth.getInstance()
                 .currentUser?.uid
-                ?: return
+
+        // USER NOT LOGGED IN
+        if (currentUid == null) {
+
+            _error.value = "User not logged in"
+
+            return
+
+        }
 
         viewModelScope.launch {
 
@@ -78,17 +91,26 @@ class ClientsViewModel(
 
             try {
 
+                println("Starting client save...")
+
                 val finalProfile = profileData.copy(
                     id = currentUid
                 )
 
+                println("Final Profile: $finalProfile")
+
                 repository.saveClient(finalProfile)
+
+                println("Client saved successfully!")
 
                 _saved.value = true
 
             } catch (e: Exception) {
 
-                _error.value = e.message
+                println("SAVE ERROR: ${e.message}")
+
+                _error.value =
+                    e.message ?: "Unknown Error"
 
             } finally {
 
@@ -106,13 +128,23 @@ class ClientsViewModel(
         val currentUid =
             FirebaseAuth.getInstance()
                 .currentUser?.uid
-                ?: return
+
+        if (currentUid == null) {
+
+            _error.value = "User not logged in"
+
+            return
+
+        }
 
         viewModelScope.launch {
 
             _isLoading.value = true
+            _error.value = null
 
             try {
+
+                println("Loading client profile...")
 
                 val result =
                     repository.getClient(currentUid)
@@ -121,11 +153,16 @@ class ClientsViewModel(
 
                     _client.value = it
 
+                    println("Client loaded!")
+
                 }
 
             } catch (e: Exception) {
 
-                _error.value = e.message
+                println("LOAD ERROR: ${e.message}")
+
+                _error.value =
+                    e.message ?: "Failed to load client"
 
             } finally {
 
@@ -136,6 +173,7 @@ class ClientsViewModel(
         }
 
     }
+
 
     fun clearSavedState() {
 
@@ -148,13 +186,27 @@ class ClientsViewModel(
 
 class ClientsViewModelFactory(
     private val repository: ClientsService
-): ViewModelProvider.Factory {
+) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(
         modelClass: Class<T>
     ): T {
 
-        return ClientsViewModel(repository) as T
+        if (modelClass.isAssignableFrom(
+                ClientsViewModel::class.java
+            )
+        ) {
+
+            @Suppress("UNCHECKED_CAST")
+            return ClientsViewModel(
+                repository
+            ) as T
+
+        }
+
+        throw IllegalArgumentException(
+            "Unknown ViewModel class"
+        )
 
     }
 

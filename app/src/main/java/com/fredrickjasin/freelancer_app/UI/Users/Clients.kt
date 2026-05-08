@@ -30,6 +30,7 @@ fun ClientProfileScreen(
 
     val context = LocalContext.current
 
+
     val factory = remember {
 
         ClientsViewModelFactory(
@@ -41,7 +42,8 @@ fun ClientProfileScreen(
     val clientViewModel: ClientsViewModel =
         viewModel(factory = factory)
 
-    val client by clientViewModel.client.collectAsState()
+    val client by
+    clientViewModel.client.collectAsState()
 
     val isLoading by
     clientViewModel.isLoading.collectAsState()
@@ -52,17 +54,15 @@ fun ClientProfileScreen(
     val saved by
     clientViewModel.saved.collectAsState()
 
-
     LaunchedEffect(Unit) {
 
         clientViewModel.loadClient()
 
     }
 
-
     LaunchedEffect(saved) {
 
-        if (saved){
+        if (saved) {
 
             Toast.makeText(
                 context,
@@ -74,11 +74,11 @@ fun ClientProfileScreen(
 
             navController.navigate(
                 Routes.AddJobPage.name
-            ){
+            ) {
 
                 popUpTo(
-                    Routes.ChoosePage.name
-                ){
+                    Routes.ClientsPage.name
+                ) {
 
                     inclusive = true
 
@@ -120,20 +120,25 @@ fun ClientProfileScreen(
             color = Color.White
         )
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Tell us about your company",
+            text = "Tell us about your business",
+            fontSize = 14.sp,
             color = Color.White.copy(alpha = 0.8f)
         )
 
         Spacer(modifier = Modifier.height(30.dp))
+
 
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(24.dp),
             colors = CardDefaults.cardColors(
                 containerColor = Color.White
+            ),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 10.dp
             )
         ) {
 
@@ -143,112 +148,146 @@ fun ClientProfileScreen(
                     Arrangement.spacedBy(16.dp)
             ) {
 
+
                 OutlinedTextField(
                     value = client.username,
                     onValueChange = {
-                        clientViewModel.updateUsername(it)
+
+                        clientViewModel
+                            .updateUsername(it)
+
                     },
                     label = {
+
                         Text("Display Name")
+
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp)
                 )
+
 
                 OutlinedTextField(
                     value = client.company,
                     onValueChange = {
-                        clientViewModel.updateCompany(it)
+
+                        clientViewModel
+                            .updateCompany(it)
+
                     },
                     label = {
+
                         Text("Company Name")
+
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp)
                 )
+
 
                 OutlinedTextField(
                     value = client.bio,
                     onValueChange = {
-                        clientViewModel.updateBio(it)
+
+                        clientViewModel
+                            .updateBio(it)
+
                     },
                     label = {
+
                         Text("Business Bio")
+
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(130.dp)
+                        .height(130.dp),
+                    shape = RoundedCornerShape(12.dp)
                 )
+
 
                 OutlinedTextField(
                     value = client.location,
                     onValueChange = {
-                        clientViewModel.updateLocation(it)
+
+                        clientViewModel
+                            .updateLocation(it)
+
                     },
                     label = {
+
                         Text("Location")
+
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp)
                 )
+
 
                 error?.let {
 
                     Text(
                         text = it,
-                        color = Color.Red
+                        color = Color.Red,
+                        fontSize = 13.sp
                     )
 
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))
 
+
                 Button(
                     onClick = {
 
-                        if (client.username.isNotEmpty()){
-
-                            val userClient = Clients(
-
-                                username = client.username,
-
-                                company = client.company,
-
-                                bio = client.bio,
-
-                                location = client.location
-
-                            )
-
-                            clientViewModel
-                                .saveClient(userClient)
-
-                        }else{
+                        if (
+                            client.username.isEmpty()
+                        ) {
 
                             Toast.makeText(
                                 context,
-                                "Enter username",
+                                "Please enter username",
                                 Toast.LENGTH_SHORT
                             ).show()
 
+                            return@Button
+
                         }
+
+                        val userClient = Clients(
+
+                            username = client.username,
+
+                            company = client.company,
+
+                            bio = client.bio,
+
+                            location = client.location
+
+                        )
+
+                        clientViewModel
+                            .saveClient(userClient)
 
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(55.dp),
                     shape = RoundedCornerShape(14.dp),
+                    enabled = !isLoading,
                     colors = ButtonDefaults.buttonColors(
                         containerColor =
                             Color(0xFF2575FC)
                     )
                 ) {
 
-                    if (isLoading){
+                    if (isLoading) {
 
                         CircularProgressIndicator(
                             color = Color.White,
                             modifier = Modifier.size(24.dp)
                         )
 
-                    }else{
+                    } else {
 
                         Text(
                             text = "Save Profile",

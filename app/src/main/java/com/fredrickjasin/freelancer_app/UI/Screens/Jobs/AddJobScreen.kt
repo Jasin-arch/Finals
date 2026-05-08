@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.fredrickjasin.freelancer_app.UI.navigation.Routes
 import com.fredrickjasin.freelancer_app.data.Models.Job
 
 @Composable
@@ -138,7 +139,7 @@ fun AddJobScreen(
             Spacer(modifier = Modifier.height(30.dp))
 
             Button(
-                onClick = {
+                onClick = { navController.navigate(Routes.HomePage.name)
 
                     val job = Job(
 
