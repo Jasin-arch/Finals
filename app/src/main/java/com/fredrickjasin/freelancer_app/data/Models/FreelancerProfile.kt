@@ -1,5 +1,4 @@
 package com.fredrickjasin.freelancer_app.data.Models
-
 data class FreelancerProfile(
     val id: String = "",
     val username: String = "",

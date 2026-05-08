@@ -1,15 +1,17 @@
 package com.fredrickjasin.freelancer_app.UI.Users
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fredrickjasin.freelancer_app.data.Models.FreelancerProfile
-import com.fredrickjasin.freelancer_app.data.Repository.ProfilesRepository
+import com.fredrickjasin.freelancer_app.data.Repository.FreelancersRepository
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class FrelancersViewModel(
-    private val repository: ProfilesRepository = ProfilesRepository()
+
+class FreelancersViewModel(
+    private val repository: FreelancersRepository = FreelancersRepository()
 ) : ViewModel() {
 
     private val auth = FirebaseAuth.getInstance()
@@ -32,8 +34,9 @@ class FrelancersViewModel(
         viewModelScope.launch {
             _isLoading.value = true
             try {
+                // Repository always returns a profile (either fetched or default)
                 val fetchedProfile = repository.fetchProfile(id)
-                fetchedProfile?.let { _profile.value = it }
+                _profile.value = fetchedProfile
                 _error.value = null
             } catch (e: Exception) {
                 _error.value = "Failed to load: ${e.localizedMessage}"
@@ -44,10 +47,10 @@ class FrelancersViewModel(
     }
 
     fun saveProfile() {
-        val currentUid = FirebaseAuth.getInstance().currentUser?.uid
+        val currentUid = auth.currentUser?.uid
 
         if (currentUid == null) {
-            _error.value = "You must login to save."
+            _error.value = "You must be logged in to save."
             return
         }
 
@@ -55,9 +58,9 @@ class FrelancersViewModel(
             _isLoading.value = true
             try {
                 val profileToSave = _profile.value.copy(id = currentUid)
-
                 repository.saveProfile(profileToSave)
                 _saved.value = true
+                _error.value = null
             } catch (e: Exception) {
                 _error.value = e.message
             } finally {

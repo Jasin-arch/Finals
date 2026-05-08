@@ -16,5 +16,9 @@ enum class Routes {
     DashboardPage,
     SettingsPage,
     HomeJobPage,
-    AddJobPage
+    AddJobPage,
+    MessagePage,
+    ApplyJobPage,
+    FreelancerListPage,
+    PaymentPage
 }

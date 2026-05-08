@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.fredrickjasin.freelancer_app.UI.navigation.Routes
+import kotlinx.coroutines.launch
 
 @Composable
 fun SettingsScreen(navController: NavHostController) {
@@ -74,7 +75,9 @@ fun SettingsScreen(navController: NavHostController) {
                         title = "Dark Mode",
                         icon = Icons.Default.DarkMode,
                         checked = darkModeEnabled,
-                        onCheckedChange = { darkModeEnabled = it }
+                        onCheckedChange = { 
+                            darkModeEnabled = it
+                        }
                     )
                 }
             }
@@ -96,10 +99,15 @@ fun SettingsScreen(navController: NavHostController) {
 
             item {
                 Spacer(modifier = Modifier.height(24.dp))
+                val authRepository = remember { com.fredrickjasin.freelancer_app.data.Repository.AuthRepository() }
+                val scope = rememberCoroutineScope()
                 Button(
                     onClick = { 
-                        navController.navigate(Routes.LoginPage.name) {
-                            popUpTo(0) { inclusive = true }
+                        scope.launch {
+                            authRepository.logoutUser()
+                            navController.navigate(Routes.LoginPage.name) {
+                                popUpTo(0) { inclusive = true }
+                            }
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),

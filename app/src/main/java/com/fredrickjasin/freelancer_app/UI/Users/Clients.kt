@@ -253,20 +253,8 @@ fun ClientProfileScreen(
 
                         }
 
-                        val userClient = Clients(
-
-                            username = client.username,
-
-                            company = client.company,
-
-                            bio = client.bio,
-
-                            location = client.location
-
-                        )
-
                         clientViewModel
-                            .saveClient(userClient)
+                            .saveClient()
 
                     },
                     modifier = Modifier

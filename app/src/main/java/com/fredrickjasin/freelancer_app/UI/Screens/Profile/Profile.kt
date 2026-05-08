@@ -37,17 +37,17 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.fredrickjasin.freelancer_app.UI.Users.FrelancersViewModel
+import androidx.navigation.NavHostController
+import com.fredrickjasin.freelancer_app.UI.Users.FreelancersViewModel
 import com.fredrickjasin.freelancer_app.UI.navigation.Routes
 import com.fredrickjasin.freelancer_app.UI.theme.Both
 import com.fredrickjasin.freelancer_app.UI.theme.LogIn
 
 @Composable
 fun ProfileScreen(
-    navController: androidx.navigation.NavHostController,
-    viewModel: FrelancersViewModel = viewModel()
+    navController: NavHostController,
+    viewModel: FreelancersViewModel = viewModel()
 ) {
-
     val context = LocalContext.current
 
     val profile by viewModel.profile.collectAsState()
@@ -55,14 +55,14 @@ fun ProfileScreen(
     val error by viewModel.error.collectAsState()
     val saved by viewModel.saved.collectAsState()
 
+    // Load the profile data when the screen is first composed
     LaunchedEffect(Unit) {
         viewModel.loadProfile()
     }
 
+    // Handle navigation and user feedback when database write succeeds
     LaunchedEffect(saved) {
-
         if (saved) {
-
             Toast.makeText(
                 context,
                 "Profile Updated Successfully",
@@ -89,7 +89,6 @@ fun ProfileScreen(
                 )
             )
             .padding(16.dp),
-
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -110,7 +109,6 @@ fun ProfileScreen(
                 containerColor = Color.White
             )
         ) {
-
             Column(
                 modifier = Modifier.padding(20.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -118,14 +116,9 @@ fun ProfileScreen(
 
                 OutlinedTextField(
                     value = profile.username,
-                    onValueChange = {
-                        viewModel.updateUsername(it)
-                    },
-                    label = {
-                        Text("Username")
-                    },
+                    onValueChange = { viewModel.updateUsername(it) },
+                    label = { Text("Username") },
                     leadingIcon = {
-
                         Icon(
                             imageVector = Icons.Filled.Person,
                             contentDescription = null,
@@ -145,14 +138,9 @@ fun ProfileScreen(
 
                 OutlinedTextField(
                     value = profile.profession,
-                    onValueChange = {
-                        viewModel.updateProfession(it)
-                    },
-                    label = {
-                        Text("Profession")
-                    },
+                    onValueChange = { viewModel.updateProfession(it) },
+                    label = { Text("Profession") },
                     leadingIcon = {
-
                         Icon(
                             imageVector = Icons.Filled.Person,
                             contentDescription = null,
@@ -172,12 +160,8 @@ fun ProfileScreen(
 
                 OutlinedTextField(
                     value = profile.bio,
-                    onValueChange = {
-                        viewModel.updateBio(it)
-                    },
-                    label = {
-                        Text("Bio")
-                    },
+                    onValueChange = { viewModel.updateBio(it) },
+                    label = { Text("Bio") },
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = LogIn,
                         unfocusedBorderColor = Both
@@ -189,14 +173,9 @@ fun ProfileScreen(
 
                 OutlinedTextField(
                     value = profile.location,
-                    onValueChange = {
-                        viewModel.updateLocation(it)
-                    },
-                    label = {
-                        Text("Location")
-                    },
+                    onValueChange = { viewModel.updateLocation(it) },
+                    label = { Text("Location") },
                     leadingIcon = {
-
                         Icon(
                             imageVector = Icons.Filled.Email,
                             contentDescription = null,
@@ -212,7 +191,6 @@ fun ProfileScreen(
                 )
 
                 error?.let {
-
                     Text(
                         text = it,
                         color = Color.Red
@@ -221,42 +199,29 @@ fun ProfileScreen(
 
                 Button(
                     onClick = {
-
-                        if (
-                            profile.username.isBlank() ||
-                            profile.profession.isBlank()
-                        ) {
-
+                        if (profile.username.isBlank() || profile.profession.isBlank()) {
                             Toast.makeText(
                                 context,
                                 "Please fill all required fields",
                                 Toast.LENGTH_SHORT
                             ).show()
-
                             return@Button
                         }
-
                         viewModel.saveProfile()
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(55.dp),
-
                     shape = RoundedCornerShape(24.dp),
-
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Both
                     )
                 ) {
-
                     if (isLoading) {
-
                         CircularProgressIndicator(
                             color = Color.White
                         )
-
                     } else {
-
                         Text(
                             text = "Update Profile",
                             color = Color.White,

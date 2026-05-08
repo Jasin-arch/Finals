@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.fredrickjasin.freelancer_app.UI.navigation.Routes
@@ -27,55 +28,43 @@ fun HomeJobsScreen(
 ) {
 
     LaunchedEffect(Unit) {
-
         viewModel.fetchJobs()
-
     }
 
     Scaffold(
-
         floatingActionButton = {
-
-            FloatingActionButton(
-
-                onClick = { navController.navigate(Routes.HomeJobPage.name) },
-
-                containerColor = Color(0xFF2563EB)
-
-            ) {
-
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = null,
-                    tint = Color.White
-                )
-
+            if (viewModel.userRole == "client") {
+                FloatingActionButton(
+                    onClick = { navController.navigate(Routes.AddJobPage.name) },
+                    containerColor = Color.White
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = null,
+                        tint = Color(0xFF6A11CB)
+                    )
+                }
             }
-
         }
-
     ) { paddingValues ->
-
         Box(
             modifier = modifier
                 .fillMaxSize()
                 .background(
                     brush = Brush.verticalGradient(
                         listOf(
-                            Color(0xFF020617),
-                            Color(0xFF0F172A)
+                            Color(0xFF6A11CB),
+                            Color(0xFF2575FC)
                         )
                     )
                 )
                 .padding(paddingValues)
         ){
-
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
-
                 Text(
                     text = "Available Jobs",
                     style = MaterialTheme.typography.headlineMedium,
@@ -85,88 +74,111 @@ fun HomeJobsScreen(
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                LazyColumn {
-
-                items(
-                        viewModel.jobsList
-                    ) { job ->
-
-                        JobCard(job)
-
-                        Spacer(modifier = Modifier.height(15.dp))
-
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    contentPadding = PaddingValues(bottom = 80.dp)
+                ) {
+                    items(viewModel.jobsList) { job ->
+                        JobCard(job, navController, viewModel.userRole)
                     }
-
                 }
-
             }
-
         }
-
     }
-
 }
 
 @Composable
-fun JobCard(job: Job){
-
+fun JobCard(job: Job, navController: NavHostController, userRole: String?){
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF1E293B)
-        )
+            containerColor = Color.White
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
-
         Column(
-            modifier = Modifier.padding(18.dp)
+            modifier = Modifier.padding(20.dp)
         ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = job.title,
+                    color = Color(0xFF6A11CB),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.weight(1f)
+                )
+                Surface(
+                    color = Color(0xFF2575FC).copy(alpha = 0.1f),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text(
+                        text = job.category,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        color = Color(0xFF2575FC),
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                }
+            }
 
-            Text(
-                text = job.title,
-                color = Color.White,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
-            )
-
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             Text(
                 text = job.description,
-                color = Color.LightGray
+                color = Color.DarkGray,
+                style = MaterialTheme.typography.bodyMedium,
+                maxLines = 3
             )
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            Text(
-                text = "Budget: ${job.budget}",
-                color = Color.Green,
-                fontWeight = FontWeight.Bold
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(
+                        text = "Budget: ${job.budget}",
+                        color = Color(0xFF2E7D32),
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 18.sp
+                    )
+                    Text(
+                        text = "📍 ${job.location}",
+                        color = Color.Gray,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
 
-            Spacer(modifier = Modifier.height(5.dp))
+                if (userRole == "freelancer") {
+                    Button(
+                        onClick = {
+                            navController.navigate("${Routes.ApplyJobPage.name}/${job.id}")
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF6A11CB)
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text("Apply Now", fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
 
-            Text(
-                text = "Category: ${job.category}",
-                color = Color.White
-            )
-
-            Spacer(modifier = Modifier.height(5.dp))
-
-            Text(
-                text = "Location: ${job.location}",
-                color = Color.White
-            )
-
-            Spacer(modifier = Modifier.height(5.dp))
+            Spacer(modifier = Modifier.height(12.dp))
+            HorizontalDivider(color = Color.LightGray.copy(alpha = 0.5f))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = "Posted by: ${job.clientName}",
-                color = Color.Cyan
+                color = Color.Gray,
+                style = MaterialTheme.typography.labelSmall
             )
-
         }
-
     }
-
 }

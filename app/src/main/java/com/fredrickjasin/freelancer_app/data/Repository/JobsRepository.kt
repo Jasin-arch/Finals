@@ -15,9 +15,8 @@ class JobsRepository {
 
     suspend fun addJob(job: Job) {
 
-        val currentUser =
-            auth.currentUser?.uid
-                ?: throw Exception("User not logged in")
+        val currentUser = auth.currentUser ?: throw Exception("Authentication Error: No user logged in")
+        val uid = currentUser.uid
 
         val document =
             firestore.collection(COLLECTION_NAME)
@@ -25,23 +24,17 @@ class JobsRepository {
 
         val newJob = job.copy(
             id = document.id,
-            clientId = currentUser
+            clientId = uid
         )
 
         try {
-
             document
                 .set(newJob)
                 .await()
-
-        }catch (e:Exception){
-
-            println("Error adding job ${e.message}")
-
-            throw e
-
+        } catch (e: Exception) {
+            println("JOB ADD FAILURE: ${e.message}")
+            throw Exception("Firestore Permission Error: Make sure your Firebase Rules allow writes to the 'Jobs' collection. Original error: ${e.message}")
         }
-
     }
 
     suspend fun fetchJobs(): List<Job> {

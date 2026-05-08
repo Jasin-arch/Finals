@@ -12,19 +12,12 @@ class ReviewsRepository : ReviewsService {
 
     override suspend fun saveReview(review: Reviews): Reviews? {
         return try {
-
             val docRef = collection.document()
-
-            val data = review.copy(
-                id = docRef.id
-            )
-
+            val data = review.copy(id = docRef.id)
             docRef.set(data).await()
-
             data
-
         } catch (e: Exception) {
-            throw Exception("Failed to save review: ${e.message}")
+            throw Exception("Firestore Permission Error: Make sure your Firebase Rules allow writes to the 'reviews' collection. Original error: ${e.message}")
         }
     }
 

@@ -31,24 +31,31 @@ class ClientsRepository : ClientsService {
     }
 
     override suspend fun saveClient(client: Clients) {
-        val uid = client.id.ifBlank { auth.currentUser?.uid }
-            ?: throw Exception("User must be logged in")
+        val currentUser = auth.currentUser ?: throw Exception("Authentication Error: No user logged in")
+        val uid = currentUser.uid
 
         try {
             val clientToSave = client.copy(id = uid)
 
-            firestore.collection(COLLECTION_NAME).document(uid).set(clientToSave).await()
+            // 1. Save to Clients collection
+            firestore.collection(COLLECTION_NAME).document(uid)
+                .set(clientToSave)
+                .await()
 
+            // 2. Save to central Users collection for role management
             val userMap = mapOf(
                 "id" to uid,
                 "userType" to "client",
-                "username" to client.username
+                "username" to client.username,
+                "email" to (currentUser.email ?: "")
             )
-            firestore.collection("Users").document(uid).set(userMap).await()
+            firestore.collection("Users").document(uid)
+                .set(userMap)
+                .await()
 
         } catch (e: Exception) {
-            println("Error saving client: ${e.message}")
-            throw e
+            println("CLIENT SAVE FAILURE: ${e.message}")
+            throw Exception("Firestore Permission Error: Make sure your Firebase Rules allow writes to 'Clients' and 'Users' collections. Original error: ${e.message}")
         }
     }
 
