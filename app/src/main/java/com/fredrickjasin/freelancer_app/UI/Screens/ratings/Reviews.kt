@@ -60,12 +60,10 @@ fun ReviewsScreen(
     val error by viewModel.error.collectAsState()
     val success by viewModel.success.collectAsState()
 
-    // LOAD REVIEWS
     LaunchedEffect(Unit) {
         viewModel.loadReviews(freelancerId)
     }
 
-    // SUCCESS TOAST
     LaunchedEffect(success) {
 
         if (success) {
@@ -102,7 +100,6 @@ fun ReviewsScreen(
             modifier = Modifier.padding(bottom = 20.dp)
         )
 
-        // REVIEW INPUT CARD
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(24.dp),
@@ -123,7 +120,6 @@ fun ReviewsScreen(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // STAR RATING
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center,
@@ -157,7 +153,6 @@ fun ReviewsScreen(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // COMMENT INPUT
                 OutlinedTextField(
                     value = comment,
                     onValueChange = {
@@ -177,7 +172,6 @@ fun ReviewsScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // ERROR
                 error?.let {
 
                     Text(
@@ -187,7 +181,6 @@ fun ReviewsScreen(
                     )
                 }
 
-                // SUBMIT BUTTON
                 Button(
                     onClick = {
 
@@ -295,7 +288,6 @@ fun ReviewsScreen(
                             modifier = Modifier.padding(16.dp)
                         ) {
 
-                            // STARS
                             Row {
 
                                 repeat(5) { index ->

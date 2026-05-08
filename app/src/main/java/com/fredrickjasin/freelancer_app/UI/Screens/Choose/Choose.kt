@@ -50,43 +50,86 @@ fun ChooseScreen(
         )
 
         Spacer(modifier = Modifier.height(32.dp))
-
-        // Card 1: Client
         Card(
             shape = RoundedCornerShape(20.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(140.dp)
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
-                        // Inside ChooseScreen.kt for the Client Card
-                        onClick = {
-                            val uid = FirebaseAuth.getInstance().currentUser?.uid
-                            if (uid != null) {
-                                // You MUST append the ID to the route name
-                                navController.navigate("${Routes.ClientsPage.name}/$uid")
-                            } else {
-                                navController.navigate(Routes.LoginPage.name)
-                            }
-                        }
-                    )
-            ){
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 10.dp
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(140.dp)
+                .clickable(
+
+                    interactionSource = remember {
+                        MutableInteractionSource()
+                    },
+
+                    indication = null
+
+                ) {
+
+                    val currentUser =
+                        FirebaseAuth.getInstance()
+                            .currentUser
+
+                    if (currentUser != null){
+
+                        navController.navigate(
+                            Routes.ClientsPage.name
+                        )
+
+                    }else{
+
+                        navController.navigate(
+                            Routes.LoginPage.name
+                        )
+
+                    }
+
+                }
+        ) {
+
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Brush.linearGradient(listOf(Color(0xFF6A11CB), Color(0xFF2575FC)))),
+                    .background(
+                        Brush.linearGradient(
+                            listOf(
+                                Color(0xFF6A11CB),
+                                Color(0xFF2575FC)
+                            )
+                        )
+                    ),
                 contentAlignment = Alignment.Center
             ) {
-                // ... (Keep your existing Icon/Text here)
-                Text("I am a Client", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-            }
-        }
 
+                Column(
+                    horizontalAlignment =
+                        Alignment.CenterHorizontally
+                ) {
+
+                    Text(
+                        text = "I am a Client",
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        text = "Hire top freelancers",
+                        color = Color.White.copy(alpha = 0.8f),
+                        fontSize = 13.sp
+                    )
+
+                }
+
+            }
+
+        }
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Card 2: Freelancer
         Card(
             shape = RoundedCornerShape(20.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
@@ -97,13 +140,10 @@ fun ChooseScreen(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,
                     onClick = {
-                        // GET THE CURRENT USER UID
                         val uid = FirebaseAuth.getInstance().currentUser?.uid
                         if (uid != null) {
-                            // NAVIGATE WITH THE UID
                             navController.navigate("${Routes.FreelancersPage.name}/$uid")
                         } else {
-                            // Optionally handle case where user is not logged in
                             navController.navigate(Routes.LoginPage.name)
                         }
                     }

@@ -5,13 +5,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
-// Implementing the service interface
 class ClientsRepository : ClientsService {
 
     private val auth = FirebaseAuth.getInstance()
     private val firestore = FirebaseFirestore.getInstance()
 
-    // Using a constant to match the ProfilesRepository style
     private val COLLECTION_NAME = "Clients"
 
     override suspend fun getClient(userId: String): Clients? {
@@ -21,15 +19,12 @@ class ClientsRepository : ClientsService {
                 .get()
                 .await()
 
-            // If the document exists, convert it; otherwise return a new object with the ID
-            // Matches the "default object" logic from your ProfilesRepository
             if (snapshot.exists()) {
                 snapshot.toObject(Clients::class.java)
             } else {
                 Clients(id = userId)
             }
         } catch (e: Exception) {
-            // Log the error for debugging like in ProfilesRepository
             println("Error fetching client: ${e.message}")
             Clients(id = userId)
         }
@@ -42,11 +37,8 @@ class ClientsRepository : ClientsService {
         try {
             val clientToSave = client.copy(id = uid)
 
-            // 1. Save to the specific "Clients" collection
             firestore.collection(COLLECTION_NAME).document(uid).set(clientToSave).await()
 
-            // 2. INTERACTION: Update a master "Users" collection
-            // This allows the app to check Routes based on "userType"
             val userMap = mapOf(
                 "id" to uid,
                 "userType" to "client",

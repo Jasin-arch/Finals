@@ -1,6 +1,7 @@
 import org.gradle.kotlin.dsl.implementation
 
 plugins {
+//    id("com.google.gms.google-services") version "4.4.4"
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.gms.google.services)

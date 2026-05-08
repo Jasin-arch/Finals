@@ -37,15 +37,15 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.fredrickjasin.freelancer_app.UI.Users.FrelancersViewModel
 import com.fredrickjasin.freelancer_app.UI.navigation.Routes
 import com.fredrickjasin.freelancer_app.UI.theme.Both
 import com.fredrickjasin.freelancer_app.UI.theme.LogIn
-import com.fredrickjasin.freelancer_app.viewmodel.FreelancersViewModel
 
 @Composable
 fun ProfileScreen(
     navController: androidx.navigation.NavHostController,
-    viewModel: FreelancersViewModel = viewModel()
+    viewModel: FrelancersViewModel = viewModel()
 ) {
 
     val context = LocalContext.current

@@ -98,7 +98,6 @@ fun SettingsScreen(navController: NavHostController) {
                 Spacer(modifier = Modifier.height(24.dp))
                 Button(
                     onClick = { 
-                        // Logout logic would go here
                         navController.navigate(Routes.LoginPage.name) {
                             popUpTo(0) { inclusive = true }
                         }

@@ -12,24 +12,15 @@ class ReviewsViewModel(
     private val repository: ReviewsRepository = ReviewsRepository()
 ) : ViewModel() {
 
-    // -------------------------
-    // REVIEWS LIST
-    // -------------------------
     private val _reviews = MutableStateFlow<List<Reviews>>(emptyList())
     val reviews: StateFlow<List<Reviews>> = _reviews
 
-    // -------------------------
-    // INPUT STATES
-    // -------------------------
     private val _rating = MutableStateFlow(0)
     val rating: StateFlow<Int> = _rating
 
     private val _comment = MutableStateFlow("")
     val comment: StateFlow<String> = _comment
 
-    // -------------------------
-    // UI STATES
-    // -------------------------
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
@@ -39,9 +30,6 @@ class ReviewsViewModel(
     private val _success = MutableStateFlow(false)
     val success: StateFlow<Boolean> = _success
 
-    // -------------------------
-    // UPDATE RATING
-    // -------------------------
     fun setRating(value: Int) {
 
         _rating.value = value.coerceIn(1, 5)
@@ -49,9 +37,6 @@ class ReviewsViewModel(
         _error.value = null
     }
 
-    // -------------------------
-    // UPDATE COMMENT
-    // -------------------------
     fun setComment(value: String) {
 
         _comment.value = value
@@ -59,9 +44,6 @@ class ReviewsViewModel(
         _error.value = null
     }
 
-    // -------------------------
-    // LOAD REVIEWS
-    // -------------------------
     fun loadReviews(freelancerId: String) {
 
         viewModelScope.launch {
@@ -89,9 +71,6 @@ class ReviewsViewModel(
         }
     }
 
-    // -------------------------
-    // SUBMIT REVIEW
-    // -------------------------
     fun submitReview(
         freelancerId: String,
         clientId: String
@@ -128,10 +107,8 @@ class ReviewsViewModel(
 
                 repository.saveReview(review)
 
-                // RELOAD REVIEWS
                 loadReviews(freelancerId)
 
-                // CLEAR INPUTS
                 _rating.value = 0
                 _comment.value = ""
 
@@ -149,9 +126,6 @@ class ReviewsViewModel(
         }
     }
 
-    // -------------------------
-    // DELETE REVIEW
-    // -------------------------
     fun deleteReview(
         reviewId: String,
         freelancerId: String
@@ -166,7 +140,6 @@ class ReviewsViewModel(
 
                 repository.deleteReview(reviewId)
 
-                // REFRESH REVIEWS
                 loadReviews(freelancerId)
 
             } catch (e: Exception) {
@@ -181,17 +154,11 @@ class ReviewsViewModel(
         }
     }
 
-    // -------------------------
-    // CLEAR ERROR
-    // -------------------------
     fun clearError() {
 
         _error.value = null
     }
 
-    // -------------------------
-    // CLEAR SUCCESS STATE
-    // -------------------------
     fun clearState() {
 
         _success.value = false

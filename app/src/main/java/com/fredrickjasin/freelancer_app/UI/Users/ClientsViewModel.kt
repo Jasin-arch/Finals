@@ -12,8 +12,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class ClientsViewModel(
-    private val repository: ClientsService
+    private val repository: ClientsService = ClientsRepository()
 ) : ViewModel() {
+
 
     private val _client = MutableStateFlow(Clients())
     val client: StateFlow<Clients> = _client
@@ -27,77 +28,134 @@ class ClientsViewModel(
     private val _saved = MutableStateFlow(false)
     val saved: StateFlow<Boolean> = _saved
 
-    // --- UI UPDATES ---
-    fun updateUsername(v: String) = updateClient { copy(username = v) }
-    fun updateCompany(v: String) = updateClient { copy(company = v) }
-    fun updateBio(v: String) = updateClient { copy(bio = v) }
-    fun updateLocation(v: String) = updateClient { copy(location = v) }
-    fun updateProfileImage(v: String) = updateClient { copy(profileImage = v) }
+    fun updateUsername(value: String) {
 
-    private fun updateClient(update: Clients.() -> Clients) {
-        _client.value = _client.value.update()
+        _client.value =
+            _client.value.copy(username = value)
+
     }
 
-    // --- DATABASE OPERATIONS ---
+    fun updateCompany(value: String) {
 
-    /**
-     * Saves the current client state to Firebase.
-     * We ignore the parameter passed from UI and use the internal state for consistency.
-     */
+        _client.value =
+            _client.value.copy(company = value)
+
+    }
+
+    fun updateBio(value: String) {
+
+        _client.value =
+            _client.value.copy(bio = value)
+
+    }
+
+    fun updateLocation(value: String) {
+
+        _client.value =
+            _client.value.copy(location = value)
+
+    }
+
+    fun updateProfileImage(value: String) {
+
+        _client.value =
+            _client.value.copy(profileImage = value)
+
+    }
+
+
     fun saveClient(profileData: Clients) {
-        val currentUid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+        val currentUid =
+            FirebaseAuth.getInstance()
+                .currentUser?.uid
+                ?: return
 
         viewModelScope.launch {
-            _isLoading.value = true
-            try {
-                // Merge the UI input with the ID
-                val finalProfile = profileData.copy(id = currentUid)
-                repository.saveClient(finalProfile)
-                _saved.value = true
-            } catch (e: Exception) {
-                _error.value = e.message
-            } finally {
-                _isLoading.value = false
-            }
-        }
-    }
 
-
-    /**
-     * Loads the client profile using the current authenticated UID.
-     */
-    fun loadClient() {
-        val currentUid = FirebaseAuth.getInstance().currentUser?.uid ?: return
-
-        viewModelScope.launch {
             _isLoading.value = true
             _error.value = null
+
             try {
-                // Matches the new interface signature: getClient(userId: String)
-                val result = repository.getClient(currentUid)
-                if (result != null) {
-                    _client.value = result
-                }
+
+                val finalProfile = profileData.copy(
+                    id = currentUid
+                )
+
+                repository.saveClient(finalProfile)
+
+                _saved.value = true
+
             } catch (e: Exception) {
+
                 _error.value = e.message
+
             } finally {
+
                 _isLoading.value = false
+
             }
+
         }
+
+    }
+
+
+    fun loadClient() {
+
+        val currentUid =
+            FirebaseAuth.getInstance()
+                .currentUser?.uid
+                ?: return
+
+        viewModelScope.launch {
+
+            _isLoading.value = true
+
+            try {
+
+                val result =
+                    repository.getClient(currentUid)
+
+                result?.let {
+
+                    _client.value = it
+
+                }
+
+            } catch (e: Exception) {
+
+                _error.value = e.message
+
+            } finally {
+
+                _isLoading.value = false
+
+            }
+
+        }
+
     }
 
     fun clearSavedState() {
+
         _saved.value = false
+
     }
+
 }
-class FreelancersViewModelFactory(
-    private val repository: ClientsRepository
-) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(ClientsViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return ClientsViewModel(repository) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
+
+
+class ClientsViewModelFactory(
+    private val repository: ClientsService
+): ViewModelProvider.Factory {
+
+    override fun <T : ViewModel> create(
+        modelClass: Class<T>
+    ): T {
+
+        return ClientsViewModel(repository) as T
+
     }
+
 }

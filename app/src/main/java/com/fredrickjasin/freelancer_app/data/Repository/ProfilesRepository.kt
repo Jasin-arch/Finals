@@ -10,7 +10,6 @@ class ProfilesRepository {
     private val auth = FirebaseAuth.getInstance()
     private val firestore = FirebaseFirestore.getInstance()
 
-    // Using a constant for the collection name prevents typos
     private val COLLECTION_NAME = "Freelancers"
 
     suspend fun fetchProfile(userId: String): FreelancerProfile {
@@ -20,19 +19,14 @@ class ProfilesRepository {
                 .get()
                 .await()
 
-            // Try to convert the document to our data class
-            // If it doesn't exist, it returns a new profile with that ID
             snapshot.toObject(FreelancerProfile::class.java) ?: FreelancerProfile(id = userId)
         } catch (e: Exception) {
-            // Log the error for debugging
             println("Error fetching profile: ${e.message}")
             FreelancerProfile(id = userId)
         }
     }
 
     suspend fun saveProfile(profile: FreelancerProfile) {
-        // We use the ID already stored in the profile object
-        // or fall back to the currently logged-in user's UID
         val uid = profile.id.ifBlank { auth.currentUser?.uid }
             ?: throw Exception("User must be logged in to save a profile")
 

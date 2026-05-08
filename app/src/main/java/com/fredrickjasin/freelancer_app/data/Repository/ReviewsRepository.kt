@@ -10,9 +10,6 @@ class ReviewsRepository : ReviewsService {
     private val db = FirebaseFirestore.getInstance()
     private val collection = db.collection("reviews")
 
-    // -----------------------------
-    // SAVE REVIEW
-    // -----------------------------
     override suspend fun saveReview(review: Reviews): Reviews? {
         return try {
 
@@ -31,9 +28,6 @@ class ReviewsRepository : ReviewsService {
         }
     }
 
-    // -----------------------------
-    // GET REVIEWS
-    // -----------------------------
     override suspend fun getReviewsByFreelancer(
         freelancerId: String
     ): List<Reviews> {
@@ -56,9 +50,6 @@ class ReviewsRepository : ReviewsService {
         }
     }
 
-    // -----------------------------
-    // AVERAGE RATING
-    // -----------------------------
     override suspend fun getAverageRating(
         freelancerId: String
     ): Double {
@@ -77,9 +68,6 @@ class ReviewsRepository : ReviewsService {
         }
     }
 
-    // -----------------------------
-    // DELETE REVIEW
-    // -----------------------------
     override suspend fun deleteReview(
         reviewId: String
     ) {

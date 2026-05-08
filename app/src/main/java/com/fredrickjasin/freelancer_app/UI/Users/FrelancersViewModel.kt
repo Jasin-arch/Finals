@@ -1,5 +1,4 @@
-package com.fredrickjasin.freelancer_app.viewmodel
-
+package com.fredrickjasin.freelancer_app.UI.Users
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fredrickjasin.freelancer_app.data.Models.FreelancerProfile
@@ -9,7 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class FreelancersViewModel(
+class FrelancersViewModel(
     private val repository: ProfilesRepository = ProfilesRepository()
 ) : ViewModel() {
 
@@ -28,14 +27,12 @@ class FreelancersViewModel(
     val saved: StateFlow<Boolean> = _saved
 
     fun loadProfile(userId: String? = null) {
-        // Use provided ID or fallback to current logged-in user
         val id = userId ?: auth.currentUser?.uid ?: return
 
         viewModelScope.launch {
             _isLoading.value = true
             try {
                 val fetchedProfile = repository.fetchProfile(id)
-                // If profile exists in Firebase, update our state
                 fetchedProfile?.let { _profile.value = it }
                 _error.value = null
             } catch (e: Exception) {
@@ -50,14 +47,13 @@ class FreelancersViewModel(
         val currentUid = FirebaseAuth.getInstance().currentUser?.uid
 
         if (currentUid == null) {
-            _error.value = "You must be logged in to save."
+            _error.value = "You must login to save."
             return
         }
 
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                // Use 'id' here because that's the name in your Data Class
                 val profileToSave = _profile.value.copy(id = currentUid)
 
                 repository.saveProfile(profileToSave)
@@ -74,14 +70,12 @@ class FreelancersViewModel(
         _saved.value = false
     }
 
-    // ---------------- FIELD UPDATES ----------------
     fun updateUsername(value: String) = updateState { it.copy(username = value) }
     fun updateProfession(value: String) = updateState { it.copy(profession = value) }
     fun updateBio(value: String) = updateState { it.copy(bio = value) }
     fun updateDOB(value: String) = updateState { it.copy(dateOfBirth = value) }
     fun updateLocation(value: String) = updateState { it.copy(location = value) }
 
-    // Helper to reduce boilerplate
     private fun updateState(update: (FreelancerProfile) -> FreelancerProfile) {
         _profile.value = update(_profile.value)
     }

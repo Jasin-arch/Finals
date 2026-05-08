@@ -34,13 +34,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.fredrickjasin.freelancer_app.UI.navigation.Routes
-import com.fredrickjasin.freelancer_app.viewmodel.FreelancersViewModel
 
 @Composable
 fun FreelancerProfileScreen(
     navController: NavHostController,
     userId: String,
-    viewModel: FreelancersViewModel,
+    viewModel: FrelancersViewModel,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -50,23 +49,17 @@ fun FreelancerProfileScreen(
     val error by viewModel.error.collectAsState()
     val saved by viewModel.saved.collectAsState()
 
-    // Load profile data when screen opens
     LaunchedEffect(userId) {
         viewModel.loadProfile(userId)
     }
 
-    // Handle Navigation Side Effect when 'saved' becomes true
     LaunchedEffect(saved) {
         if (saved) {
             Toast.makeText(context, "Profile Saved Successfully", Toast.LENGTH_SHORT).show()
 
-            // Reset the 'saved' state in ViewModel so the toast/nav doesn't loop
             viewModel.clearSavedState()
 
-            // Navigate to Home and clear the profile screen from the backstack
             navController.navigate(Routes.HomePage.name) {
-                // This clears everything up to the Home Page,
-                // preventing the user from navigating back to the edit screen
                 popUpTo(0) { inclusive = true }
                 launchSingleTop = true
             }
@@ -90,7 +83,7 @@ fun FreelancerProfileScreen(
             "Freelancer Profile",
             fontSize = 26.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.White
+            color = Color.Black
         )
 
         Spacer(Modifier.height(16.dp))
@@ -105,7 +98,8 @@ fun FreelancerProfileScreen(
                 OutlinedTextField(
                     value = profile.username,
                     onValueChange = viewModel::updateUsername,
-                    label = { Text("Username") },
+                    label = { Text("Username")
+                            },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )
@@ -167,11 +161,11 @@ fun FreelancerProfileScreen(
                     },
                     modifier = Modifier.fillMaxWidth().height(55.dp),
                     shape = RoundedCornerShape(12.dp),
-                    enabled = !isLoading // Disable button while saving
+                    enabled = !isLoading
                 ) {
                     if (isLoading) {
                         CircularProgressIndicator(
-                            color = Color.White,
+                            color = Color.Black,
                             modifier = Modifier.size(24.dp),
                             strokeWidth = 2.dp
                         )

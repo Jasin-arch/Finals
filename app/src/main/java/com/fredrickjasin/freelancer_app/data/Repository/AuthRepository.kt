@@ -33,7 +33,6 @@ class AuthRepository : AuthService {
     }
 
     override suspend fun getUserProfile(user: UserModel) {
-        // Optional later
     }
 
     override suspend fun logoutUser() {

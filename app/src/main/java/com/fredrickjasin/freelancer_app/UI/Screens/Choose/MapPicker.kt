@@ -36,7 +36,6 @@ fun MapPickerScreen(
 
         Spacer(modifier = Modifier.height(30.dp))
 
-        // 🌍 Example locations (simulate map selection)
         Button(
             onClick = {
                 returnLocation(navController, "Nairobi, Kenya")
@@ -70,9 +69,7 @@ fun MapPickerScreen(
     }
 }
 
-/**
- * 📦 Helper function to return data back to Profile screen
- */
+
 private fun returnLocation(
     navController: NavHostController,
     location: String

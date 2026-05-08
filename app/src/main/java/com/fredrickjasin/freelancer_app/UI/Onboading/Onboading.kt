@@ -28,15 +28,10 @@ fun OnboadingScreen(
     modifier: Modifier)
 {
 
-    // Gradient background using ChooseScreen colors
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(Color(0xFF6A11CB), Color(0xFF2575FC))
-                )
-            )
+            .background(Brush.linearGradient(listOf(Color(0xFFFC5C7D), Color(0xFF6A82FB)))),
     ) {
         Column(
             verticalArrangement = Arrangement.Center,
@@ -65,12 +60,12 @@ fun OnboadingScreen(
                         style = TextStyle(
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold,
-                            color = LogIn // using the ChooseScreen main color
+                            color = LogIn
                         )
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Connect with top freelancers and get your work done effortlessly.",
+                        text = "Connect with top freelancers and Clients to get the .",
                         style = TextStyle(
                             fontSize = 16.sp,
                             color = Color.Gray
@@ -83,7 +78,6 @@ fun OnboadingScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Login Button using gradient colors
             Button(
                 onClick = { navController.navigate(Routes.LoginPage.name) },
                 modifier = Modifier
@@ -98,33 +92,10 @@ fun OnboadingScreen(
                     style = TextStyle(
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                )
-            }
 
-            Spacer(modifier = Modifier.height(16.dp))
 
-            // Sign Up Button with gradient border
-            OutlinedButton(
-                onClick = { navController.navigate(Routes.SignUpPage.name) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
-                    .padding(horizontal = 32.dp),
-                shape = RoundedCornerShape(25.dp),
-                colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent),
-                border = ButtonDefaults.outlinedButtonBorder.copy(
-                    width = 2.dp,
-                )
-            ) {
-                Text(
-                    text = "SIGN UP",
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
                     )
+
                 )
             }
         }

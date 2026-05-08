@@ -14,5 +14,7 @@ enum class Routes {
     HomePage,
     MapPage,
     DashboardPage,
-    SettingsPage
+    SettingsPage,
+    HomeJobPage,
+    AddJobPage
 }
