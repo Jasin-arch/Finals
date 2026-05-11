@@ -8,8 +8,10 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.fredrickjasin.freelancer_app.UI.ClientHomeScreen
 import com.fredrickjasin.freelancer_app.UI.HomeScreen
 import com.fredrickjasin.freelancer_app.UI.Onboading.OnboadingScreen
+import com.fredrickjasin.freelancer_app.UI.STK.Intent
 import com.fredrickjasin.freelancer_app.UI.Screens.Choose.ChooseScreen
 import com.fredrickjasin.freelancer_app.UI.Screens.Choose.MapPickerScreen
 import com.fredrickjasin.freelancer_app.UI.Screens.Dashboard.DashboardScreen
@@ -80,7 +82,6 @@ fun AppNavigation(
         ) { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId") ?: ""
 
-            // Instantiating the corrected ViewModel
             val freelancerViewModel: FreelancersViewModel = viewModel()
 
             FreelancerProfileScreen(
@@ -154,6 +155,13 @@ fun AppNavigation(
         composable(Routes.PaymentPage.name) {
             PaymentScreen(navController, modifier)
         }
+        composable(Routes.STKPage.name) {
+            Intent()}
+        composable(Routes.ClientsHomePage.name) {
+            ClientHomeScreen(modifier, navController)
+
+        }
+
 
         composable(
             route = "${Routes.ApplyJobPage.name}/{jobId}",

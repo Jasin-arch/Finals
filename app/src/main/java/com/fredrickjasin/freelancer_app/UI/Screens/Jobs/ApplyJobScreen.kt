@@ -94,7 +94,7 @@ fun ApplyJobScreen(
                     OutlinedTextField(
                         value = portfolioLink,
                         onValueChange = { portfolioLink = it },
-                        label = { Text("Portfolio Link (Optional)") },
+                        label = { Text("Portfolio Link") },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp)
                     )
@@ -109,7 +109,6 @@ fun ApplyJobScreen(
                             }
                             
                             isSubmitting = true
-                            // Simulate submission
                             navController.popBackStack()
                             Toast.makeText(context, "Application submitted successfully!", Toast.LENGTH_LONG).show()
                         },

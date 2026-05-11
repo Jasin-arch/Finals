@@ -50,9 +50,16 @@ fun FreelancerHomeScreen(
                     navController.navigate(Routes.HomeJobPage.name)
                 }
                 
-                // Placeholder for jobs
                 Text("Browse latest opportunities tailored to your skills.", color = Color.White.copy(alpha = 0.7f))
                 
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Success Stories Section
+                SectionHeaderWithLink("Success Stories", "")
+                Text("See how other freelancers are winning with WorkBridge.", color = Color.White.copy(alpha = 0.7f))
+                Spacer(modifier = Modifier.height(16.dp))
+                FreelancerSuccessStories()
+
                 Spacer(modifier = Modifier.height(24.dp))
 
                 SectionHeaderWithLink("Recent Notifications", "See More") {
@@ -105,7 +112,7 @@ fun FreelancerStatsSection() {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        StatCard("Earnings", "$1,200", Modifier.weight(1f))
+        StatCard("Earnings", "Earn as Much as Kshs 30,000 per Month", Modifier.weight(1f))
         StatCard("Active Jobs", "3", Modifier.weight(1f))
     }
 }
@@ -120,6 +127,38 @@ fun StatCard(label: String, value: String, modifier: Modifier) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(label, color = Color.White.copy(alpha = 0.8f), fontSize = 12.sp)
             Text(value, color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+        }
+    }
+}
+
+@Composable
+fun FreelancerSuccessStories() {
+    val stories = listOf(
+        "International Success" to "WorkBridge helped me land my first international client within a week! - Alex, Web Dev",
+        "Steady Income" to "I went from struggling to find work to having a steady stream of projects. - Maria, Designer",
+        "Financial Freedom" to "The payment system is so reliable, I never have to worry about getting paid. - David, Writer",
+        "Career Milestone" to "I've built a professional portfolio that now attracts high-paying clients. - Sophie, UI/UX",
+        "Skill Growth" to "The diverse range of projects helped me master new technologies quickly. - James, Fullstack Dev"
+    )
+
+    LazyRow(
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        contentPadding = PaddingValues(end = 16.dp)
+    ) {
+        items(stories) { story ->
+            Card(
+                modifier = Modifier
+                    .width(260.dp)
+                    .height(140.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.15f))
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(story.first, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(story.second, color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp, lineHeight = 20.sp)
+                }
+            }
         }
     }
 }

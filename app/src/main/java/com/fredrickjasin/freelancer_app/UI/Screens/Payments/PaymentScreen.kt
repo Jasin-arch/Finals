@@ -55,7 +55,6 @@ fun PaymentScreen(
                 .padding(innerPadding)
                 .background(Color(0xFFF5F7FB))
         ) {
-            // Balance Card
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -97,7 +96,6 @@ fun PaymentScreen(
                 }
             }
 
-            // Transactions Section
             Text(
                 "Transaction History",
                 modifier = Modifier.padding(16.dp),
@@ -123,7 +121,6 @@ fun PaymentScreen(
         }
     }
 
-    // Deposit Dialog
     if (showDepositDialog) {
         AlertDialog(
             onDismissRequest = { showDepositDialog = false },
@@ -147,7 +144,6 @@ fun PaymentScreen(
         )
     }
 
-    // Withdraw Dialog
     if (showWithdrawDialog) {
         AlertDialog(
             onDismissRequest = { showWithdrawDialog = false },

@@ -2,6 +2,8 @@ package com.fredrickjasin.freelancer_app.UI
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -49,6 +51,14 @@ fun ClientHomeScreen(
                 }
                 
                 Text("Track progress and communicate with hires.", color = Color.White.copy(alpha = 0.7f))
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Success Stories Section for Clients
+                SectionHeaderWithLink("Client Success Stories", "")
+                Text("How businesses scale with WorkBridge.", color = Color.White.copy(alpha = 0.7f))
+                Spacer(modifier = Modifier.height(16.dp))
+                ClientSuccessStories()
 
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -126,6 +136,38 @@ fun QuickActionCard(label: String, icon: androidx.compose.ui.graphics.vector.Ima
             Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(24.dp))
             Spacer(modifier = Modifier.height(8.dp))
             Text(label, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+        }
+    }
+}
+
+@Composable
+fun ClientSuccessStories() {
+    val stories = listOf(
+        "Website Overhaul" to "Found an amazing developer who transformed our outdated site into a modern masterpiece. - Sarah, CEO",
+        "Branding Success" to "The designers here delivered a brand identity that truly resonates with our audience. - Mark, Founder",
+        "Mobile App Launch" to "From concept to App Store, the freelancers here made our vision a reality. - Tech Innovations",
+        "Marketing Growth" to "Our social media presence exploded thanks to the expert strategists we hired. - Local Boutique",
+        "Quick Turnaround" to "Needed a report analyzed overnight, and the expert delivered ahead of schedule. - Project Manager"
+    )
+
+    LazyRow(
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        contentPadding = PaddingValues(end = 16.dp)
+    ) {
+        items(stories) { story ->
+            Card(
+                modifier = Modifier
+                    .width(260.dp)
+                    .height(140.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.15f))
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(story.first, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(story.second, color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp, lineHeight = 20.sp)
+                }
+            }
         }
     }
 }

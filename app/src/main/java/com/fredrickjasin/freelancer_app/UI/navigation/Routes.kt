@@ -20,5 +20,7 @@ enum class Routes {
     MessagePage,
     ApplyJobPage,
     FreelancerListPage,
-    PaymentPage
+    PaymentPage,
+    STKPage,
+    ClientsHomePage,
 }

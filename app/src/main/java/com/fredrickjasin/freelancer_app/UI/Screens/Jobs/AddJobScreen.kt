@@ -154,7 +154,7 @@ fun AddJobScreen(
                                 viewModel.addJob(job) { success, message ->
                                     Toast.makeText(context, message, Toast.LENGTH_LONG).show()
                                     if (success) {
-                                        navController.navigate(Routes.HomePage.name) {
+                                        navController.navigate(Routes.ClientsHomePage.name) {
                                             popUpTo(Routes.AddJobPage.name) { inclusive = true }
                                         }
                                     }
