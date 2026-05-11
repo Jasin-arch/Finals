@@ -1,5 +1,8 @@
 package com.fredrickjasin.freelancer_app.UI.Screens.Payments
 
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,6 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -33,10 +37,11 @@ fun PaymentScreen(
     modifier: Modifier = Modifier,
     viewModel: PaymentViewModel = viewModel()
 ) {
+    val context = LocalContext.current
     val wallet by viewModel.wallet.collectAsState()
     val transactions by viewModel.transactions.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
-    
+
     var showDepositDialog by remember { mutableStateOf(false) }
     var showWithdrawDialog by remember { mutableStateOf(false) }
     var amountText by remember { mutableStateOf("") }
@@ -70,7 +75,7 @@ fun PaymentScreen(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text("Total Balance", color = Color.White.copy(alpha = 0.8f), fontSize = 16.sp)
                     Text(
-                        "$${String.format("%.2f", wallet.balance)}",
+                        "Ksh ${String.format("%.2f", wallet.balance)}",
                         color = Color.White,
                         fontSize = 42.sp,
                         fontWeight = FontWeight.ExtraBold
@@ -121,48 +126,119 @@ fun PaymentScreen(
         }
     }
 
+    // --- DEPOSIT DIALOG (Launches M-Pesa STK) ---
     if (showDepositDialog) {
         AlertDialog(
             onDismissRequest = { showDepositDialog = false },
-            title = { Text("Deposit Funds") },
+            title = { Text("Deposit via Mobile Money") },
             text = {
-                OutlinedTextField(
-                    value = amountText,
-                    onValueChange = { amountText = it },
-                    label = { Text("Amount ($)") },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp)
-                )
+                Column {
+                    Text(
+                        "Confirming will open your SIM ToolKit to complete your payment.",
+                        fontSize = 14.sp,
+                        color = Color.Gray,
+                        modifier = Modifier.padding(bottom = 12.dp)
+                    )
+                    OutlinedTextField(
+                        value = amountText,
+                        onValueChange = { amountText = it },
+                        label = { Text("Amount (Ksh)") },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                }
             },
             confirmButton = {
-                Button(onClick = {
-                    amountText.toDoubleOrNull()?.let { viewModel.deposit(it) }
-                    showDepositDialog = false
-                    amountText = ""
-                }) { Text("Confirm") }
+                Button(
+                    onClick = {
+                        val amount = amountText.toDoubleOrNull()
+                        if (amount != null && amount > 0) {
+                            // 1. Process standard viewmodel logic
+                            viewModel.deposit(amount)
+
+                            // 2. Launch SIM ToolKit (STK Intent)
+                            try {
+                                val simToolKitLaunchIntent = context.packageManager
+                                    .getLaunchIntentForPackage("com.android.stk")
+
+                                if (simToolKitLaunchIntent != null) {
+                                    context.startActivity(simToolKitLaunchIntent)
+                                    Toast.makeText(context, "Opening SIM ToolKit...", Toast.LENGTH_LONG).show()
+                                } else {
+                                    // Fallback: If direct package launch is restricted/missing, dial M-Pesa USSD
+                                    val ussdIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + "*334%23"))
+                                    context.startActivity(ussdIntent)
+                                    Toast.makeText(context, "STK App not found. Dialing USSD code...", Toast.LENGTH_LONG).show()
+                                }
+                            } catch (e: Exception) {
+                                Toast.makeText(context, "Error opening payment gateway: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+                            }
+
+                            showDepositDialog = false
+                            amountText = ""
+                        } else {
+                            Toast.makeText(context, "Please enter a valid amount", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                ) { Text("Open STK") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDepositDialog = false }) { Text("Cancel") }
             }
         )
     }
 
+    // --- WITHDRAW DIALOG (Launches SMS or Direct Dialer) ---
     if (showWithdrawDialog) {
         AlertDialog(
             onDismissRequest = { showWithdrawDialog = false },
             title = { Text("Withdraw Funds") },
             text = {
-                OutlinedTextField(
-                    value = amountText,
-                    onValueChange = { amountText = it },
-                    label = { Text("Amount ($)") },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp)
-                )
+                Column {
+                    Text(
+                        "An SMS notification with transfer instructions will be generated.",
+                        fontSize = 14.sp,
+                        color = Color.Gray,
+                        modifier = Modifier.padding(bottom = 12.dp)
+                    )
+                    OutlinedTextField(
+                        value = amountText,
+                        onValueChange = { amountText = it },
+                        label = { Text("Amount (Ksh)") },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                }
             },
             confirmButton = {
-                Button(onClick = {
-                    amountText.toDoubleOrNull()?.let { viewModel.withdraw(it) }
-                    showWithdrawDialog = false
-                    amountText = ""
-                }) { Text("Confirm") }
+                Button(
+                    onClick = {
+                        val amount = amountText.toDoubleOrNull()
+                        if (amount != null && amount > 0) {
+                            // 1. Process standard viewmodel logic
+                            viewModel.withdraw(amount)
+
+                            // 2. Open SMS Intent to confirm withdrawal request
+                            try {
+                                val uri = Uri.parse("smsto:07456789") // Replace with your company/agent support number
+                                val smsIntent = Intent(Intent.ACTION_SENDTO, uri).apply {
+                                    putExtra("sms_body", "Withdrawal Request: Ksh $amount from SkillLink Africa Wallet.")
+                                }
+                                context.startActivity(smsIntent)
+                            } catch (e: Exception) {
+                                Toast.makeText(context, "Unable to send SMS.", Toast.LENGTH_SHORT).show()
+                            }
+
+                            showWithdrawDialog = false
+                            amountText = ""
+                        } else {
+                            Toast.makeText(context, "Please enter a valid amount", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                ) { Text("Confirm & SMS") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showWithdrawDialog = false }) { Text("Cancel") }
             }
         )
     }
@@ -187,7 +263,7 @@ fun PaymentActionItem(icon: ImageVector, label: String, color: Color, onClick: (
 @Composable
 fun TransactionItem(transaction: Transaction) {
     val isIncoming = transaction.type == "deposit" || transaction.toUserId.isNotEmpty() && transaction.fromUserId != FirebaseAuth.getInstance().currentUser?.uid
-    
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
